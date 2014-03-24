@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='{{STATIC_URL}}style.css'/>
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <header>
+      <h2>OggBox:{{ area }}</h2>
+    </header>
+    <nav>
+      <a href='/' {% if area == "Home" %}class='active'{% endif %}>Home</a>
+      <a href='http://github.com/hairymnstr/oggbox'>GitHub</a>
+      <a href='/docs/' {% if area == "Hardware Documentation" %}class='active'{% endif %}>Hardware Docs</a>
+      <a href='/doxygen/'>Software Docs</a>
+    </nav>
+    <article>
+      {% block content %}{% endblock %}
+    </article>
+    <footer>
+      <p class='copyright'>Copyright Nathan Dumont 2013  :: This work is licensed under the Creative Commons <a href='http://creativecommons.org/licenses/by-sa/3.0/'>BY-SA</a> 3.0 License.</a>
+    </footer>
+  </body>
+</html>

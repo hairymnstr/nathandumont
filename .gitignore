@@ -1,0 +1,5 @@
+*.pyc
+nathandumont/settings_private.py
+logs
+media
+

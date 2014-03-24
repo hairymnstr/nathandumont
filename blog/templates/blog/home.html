@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Hardware Documentation Home{% endblock %}
+{% block content %}
+    <header>
+      <h1>Hardware Documentation Home</h1>
+      <p class='pubdate'>{{ doc.last_modified|date:'Y-m-d H:i' }}</p>
+    </header>
+    <p><strong>Lorem ipsum dolor sit amet</strong></p>
+    <p>Lorem ipsum</p>
+{% endblock %}
