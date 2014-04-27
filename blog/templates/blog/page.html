@@ -2,10 +2,35 @@
 {% block title %}
 {{ doc.title }}
 {% endblock %}
+{% block area %}
+{{ doc.section.title }}
+{% endblock %}
 {% block content %}
     <header>
       <h1>{{doc.title}}</h1>
-      <p class='pubdate'>Last updated: {{ doc.last_modified|date:'Y-m-d H:i' }}</p>
+      <p class='pubdate'>Last updated: {{ doc.last_modified }}</p>
     </header>
     {{ doc.rendered|safe }}
+    {% if atts %}
+    <table>
+      <tr><th>Attachment</th><th>Last Update</th><th>Size</th></tr>
+    {% for att in atts %}
+      <tr><td><a href='{{att.file.url}}'>{{att.description}}</a></td><td>{{att.updated}}</td><td>{{att.file.size|filesizeformat}}</td></tr>
+    {% endfor %}
+    </table>
+    {% endif %}
+    {% if comments %}
+    <h3>Tags</h3>
+    <ul>
+    {% for tag in tags %}
+    <li>{{tag.tag.text}}</li>
+    {% endfor %}
+    </ul>
+    <h3>Comments</h3>
+    {% for comment in comments %}
+    <strong>{{ comment.title }}</strong>
+    <p class='pubdate'>{{comment.posted}} {{comment.posted_by}}</p>
+    {{comment.content}}
+    {% endfor %}
+    {% endif %}
 {% endblock %}

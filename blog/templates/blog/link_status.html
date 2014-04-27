@@ -1,0 +1,14 @@
+{% extends 'admin/base_site.html' %}
+{% block content %}
+    <table>
+        {% for page in pages %}
+        <tr><th colspan='3'>{{page.title}}</th></tr>
+        {% for link in page.links %}
+        <tr {{link.style|safe}}><td>{{link.url}}</td><td>{{link.code}}</td><td>{{link.extra}}</td></tr>
+        {% endfor %}
+        {% for image in page.images %}
+        <tr {{image.style|safe}}><td>{{image.url}}</td><td>{{image.code}}</td><td>{{image.extra}}</td></tr>
+        {% endfor %}
+        {% endfor %}
+    </table>
+{% endblock %}

@@ -1,7 +1,11 @@
-<div class="figure">
+<div class='gallery'>
+  {% for figure in figures %}
+  <div class="figure">
   <h4>{{figure.title}}</h4>
   <a href="{{figure.img.url}}">
     <img src="{{figure.thumbnail.url}}" title="{{figure.title}}" alt="{{figure.caption}}"/>
   </a>
   <p>{{figure.caption}}</p>
+  </div>
+  {% endfor %}
 </div>

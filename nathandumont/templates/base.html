@@ -6,19 +6,24 @@
   </head>
   <body>
     <header>
-      <h2>OggBox:{{ area }}</h2>
+      <h1>{% block area %}{% endblock %}</h1>
     </header>
     <nav>
-      <a href='/' {% if area == "Home" %}class='active'{% endif %}>Home</a>
-      <a href='http://github.com/hairymnstr/oggbox'>GitHub</a>
-      <a href='/docs/' {% if area == "Hardware Documentation" %}class='active'{% endif %}>Hardware Docs</a>
-      <a href='/doxygen/'>Software Docs</a>
+      <a href='/'>Home</a>
+      <a href='http://www.youtube.com/user/nathandumontdotcom/featured'>YouTube</a>
+      <a href='/section/reviews'>Reviews</a>
+      <a href='/section/projects'>Projects</a>
+      <a href='/section/tutorials'>Tutorials</a>
+      <a href='/section/retro-computing'>Retro Computing</a>
+      <a href='http://oggbox.nathandumont.com'>OggBox</a>
+      <a href='/author'>Author</a>
     </nav>
+    <div id='bar'><div id='link'><a href='/'>nathandumont.com</a></div></div>
     <article>
       {% block content %}{% endblock %}
     </article>
     <footer>
-      <p class='copyright'>Copyright Nathan Dumont 2013  :: This work is licensed under the Creative Commons <a href='http://creativecommons.org/licenses/by-sa/3.0/'>BY-SA</a> 3.0 License.</a>
+      <p class='copyright'>Copyright Nathan Dumont 2005 - 2014 :: This work is licensed under the Creative Commons <a href='http://creativecommons.org/licenses/by-sa/3.0/'>BY-SA</a> 3.0 License.</p>
     </footer>
   </body>
 </html>
