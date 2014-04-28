@@ -5,12 +5,13 @@
     <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
-    <header>
+    <header id="page_header">
       <h1>{% block area %}{% endblock %}</h1>
     </header>
     <nav>
       <a href='/'>Home</a>
       <a href='http://www.youtube.com/user/nathandumontdotcom/featured'>YouTube</a>
+      <a href='https://github.com/hairymnstr'>GitHub</a>
       <a href='/section/reviews'>Reviews</a>
       <a href='/section/projects'>Projects</a>
       <a href='/section/tutorials'>Tutorials</a>
@@ -19,9 +20,14 @@
       <a href='/author'>Author</a>
     </nav>
     <div id='bar'><div id='link'><a href='/'>nathandumont.com</a></div></div>
-    <article>
-      {% block content %}{% endblock %}
-    </article>
+    <div id='page'>
+      <article>
+        {% block content %}{% endblock %}
+      </article>
+      <div id='right'>
+        {% include "right.html" %}
+      </div>
+    </div>
     <footer>
       <p class='copyright'>Copyright Nathan Dumont 2005 - 2014 :: This work is licensed under the Creative Commons <a href='http://creativecommons.org/licenses/by-sa/3.0/'>BY-SA</a> 3.0 License.</p>
     </footer>

@@ -19,11 +19,10 @@
     {% endfor %}
     </table>
     {% endif %}
-    {% if comments %}
     <h3>Tags</h3>
-    <ul>
+    <ul class='tags'>
     {% for tag in tags %}
-    <li>{{tag.tag.text}}</li>
+    <li>{{tag.tag.text}}{% if not forloop.last %},{% endif %}</li>
     {% endfor %}
     </ul>
     <h3>Comments</h3>
@@ -32,5 +31,8 @@
     <p class='pubdate'>{{comment.posted}} {{comment.posted_by}}</p>
     {{comment.content}}
     {% endfor %}
-    {% endif %}
+    <p>Posting comments is not currently possible.  If you want to discuss this article
+    you can reach me on <a href='https://twitter.com/hairymnstr'>twitter</a> or via
+    <a href='mailto:nathan@nathandumont.com'>email</a>.</p>
+    <hr class='clear'/>
 {% endblock %}

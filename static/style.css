@@ -7,6 +7,28 @@ body {
   font-size: 10pt;
 }
 
+#page {
+  background: #000000;
+  width: 950px;
+  margin: 0px auto;
+  overflow: auto;
+}
+
+article {
+  width: 720px;
+  margin: 0px 220px 10px 10px;
+  float: left;
+}
+
+#right {
+  width: 190px;
+  padding-left: 10px;
+  float: left;
+  margin-left: -210px;
+  margin-bottom: 10px;
+  border-left: 1px solid #181838;
+}
+
 #bar {
   border-width: 2px 0px;
   border-color: #6666ff;
@@ -24,7 +46,7 @@ body {
   text-decoration: none;
 }
 
-header {  
+#page_header {  
   width: 950px;
   margin: 0px auto;
 }
@@ -49,6 +71,7 @@ hr {
 }
 
 hr.clear {
+  visibility: hidden;
   clear: both;
 }
 
@@ -104,13 +127,6 @@ nav:after {
   visibility: hidden;
 }
 
-article {
-  background: #000000;
-  width: 930px;
-  margin: 0px auto;
-  padding: 10px;
-}
-
 article header h1 {
   margin: 5px 0px;
 }
@@ -131,11 +147,14 @@ img.img_right {
   border: none;
 }
 
+/* Figure styling */
+
+
 .figure {
   float: left;
   clear: left;
   width: 150px;
-  padding: 10px;
+  padding: 5px;
   margin-right: 10px;
   margin-bottom: 10px;
   border: 1px solid #303030;
@@ -144,8 +163,13 @@ img.img_right {
   text-align: center;
 }
 
+.figure h4 {
+    margin: 0px 0px 5px 0px;
+}
+
 .figure p {
-  text-align: left;
+    margin: 5px 0px 0px 0px;
+    text-align: left;
 }
 
 .figure_nothumb {
@@ -186,6 +210,8 @@ img.img_right {
   visibility: hidden;
 }
 
+/* end of figure styling */
+
 .code {
   border: 1px solid white;
   color: #fff;
@@ -194,7 +220,8 @@ img.img_right {
   overflow: hidden;
 }
 
-footer { 
+footer {
+  clear: left;
   padding: 5px;
   color: #ffa000;
   font-size: 10px;
@@ -204,6 +231,8 @@ p.copyright {
   margin: 2px 0px;
   text-align: center;
 }
+
+/* paginator */
 
 .pagination {
   width: 100%;
@@ -219,4 +248,27 @@ p.copyright {
   list-style-image: none;
   list-style-type: none;
   display: inline;
+}
+
+/* end of paginator */
+
+ul.bare {
+    margin: 0px;
+    padding: 0px;
+}
+
+ul.bare li {
+    list-style-image: none;
+    list-style-type: none;
+}
+
+ul.tags {
+    margin: 0px;
+    padding: 0px;
+}
+
+ul.tags li {
+    list-style-image: none;
+    list-style-type: none;
+    display: inline;
 }

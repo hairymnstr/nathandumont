@@ -74,15 +74,23 @@ class FigureInline(admin.TabularInline):
     model = Figure
     fields = ('img', 'title', 'caption', 'label')
 
+class FigureAdmin(admin.ModelAdmin):
+    model = Figure
+    readonly_fields = ('preview_tag',)
+    fields = ('img', ('thumbnail', 'preview_tag'), 'title', 'caption', 'label', 'gallery')
+    ordering = ('label',)
+    
 class PostAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'classes': ('monospace',),
-            'fields': ('title', 'source', 'section', 'last_modified', 'published')
+            'fields': (('title', 'slug'), 'source', 'section', 'last_modified', 'published', 'special')
         }),
     )
     inlines = [AttachmentInline, LegacyNodeInline]
-    
+    list_display = ('title', 'last_modified', 'section', 'published', 'special')
+    readonly_fields = ('slug',)
+    ordering = ('-last_modified',)
     model = Post
     
     def get_urls(self):
@@ -142,7 +150,7 @@ class GalleryAdmin(admin.ModelAdmin):
     inlines = [FigureInline]
   
 admin.site.register(Post, PostAdmin)
-admin.site.register(Figure)
+admin.site.register(Figure, FigureAdmin)
 admin.site.register(Section)
 admin.site.register(Gallery, GalleryAdmin)
 admin.site.register(Tag)

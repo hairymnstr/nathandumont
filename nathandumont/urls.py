@@ -11,9 +11,10 @@ urlpatterns = patterns('',
     url(r'^$', 'blog.views.home'),
     url(r'^page/(?P<offset>\d+)/?$', 'blog.views.home'),
     url(r'^section/(?P<section>[-\w]+)/?$', 'blog.views.section'),
-    url(r'^section/(?P<section>[-\w]+)/(?P<offset>\d+)/?$', 'blog.views.section'),
+    url(r'^section/(?P<section>[-\w]+)/page/(?P<offset>\d+)/?$', 'blog.views.section'),
     url(r'^blog/', include('blog.urls')),
     url(r'^node/(?P<nid>\d+)/?$', 'blog.views.legacy_node'),
+    url(r'^author/?$', 'blog.views.special_page', {'slug': 'author'}),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

@@ -7,9 +7,9 @@ from math import ceil
 
 def home(request, offset="1"):
   limit = int(offset) - 1
-  posts = Post.objects.filter(published=True).order_by('-last_modified')[limit*10:(limit+1)*10]
+  posts = Post.objects.filter(published=True, special=False).order_by('-last_modified')[limit*10:(limit+1)*10]
   
-  num_posts = Post.objects.filter(published=True).count()
+  num_posts = Post.objects.filter(published=True, special=False).count()
   
   pages = int(ceil(num_posts / 10.0))
   
@@ -29,16 +29,17 @@ def home(request, offset="1"):
                                'pages': range(1, pages+1),
                                'page': limit + 1,
                                'next': next_page,
-                               'prev': prev_page})
+                               'prev': prev_page,
+                               'page0': '/'})
   
   return HttpResponse(t.render(c))
   
 def section(request, section, offset="1"):
   limit = int(offset) - 1
   sec = get_object_or_404(Section, url=section)
-  posts = Post.objects.filter(published=True, section=sec).order_by('-last_modified')[limit*10:(limit+1)*10]
+  posts = Post.objects.filter(published=True, special=False, section=sec).order_by('-last_modified')[limit*10:(limit+1)*10]
   
-  num_posts = Post.objects.filter(published=True, section=sec).count()
+  num_posts = Post.objects.filter(published=True, special=False, section=sec).count()
   
   pages = int(ceil(num_posts / 10.0))
   
@@ -58,12 +59,13 @@ def section(request, section, offset="1"):
                                'pages': range(1, pages+1),
                                'page': limit + 1,
                                'next': next_page,
-                               'prev': prev_page})
+                               'prev': prev_page,
+                               'page0': '/section/' + section + '/'})
   
   return HttpResponse(t.render(c))
 
 def blog_page(request, slug):
-  doc = get_object_or_404(Post, slug=slug)
+  doc = get_object_or_404(Post, slug=slug, published=True, special=False)
   
   att = Attachment.objects.filter(post=doc).all()
   
@@ -76,14 +78,20 @@ def blog_page(request, slug):
   
   return HttpResponse(t.render(c))
 
-#def docs_index(request):
-  #doc = Subject.objects.all()
-  
-  #t = loader.get_template('docs/index.html')
-  #c = RequestContext(request, {'docs': doc, 'area': 'Hardware Documentation'})
-  
-  #return HttpResponse(t.render(c))
-
+def special_page(request, slug):
+    doc = get_object_or_404(Post, slug=slug, published=True, special=True)
+    
+    att = Attachment.objects.filter(post=doc)
+    
+    comments = Comment.objects.filter(post=doc, approved=True)
+    
+    tags = PostTag.objects.filter(post=doc)
+    
+    t = loader.get_template('blog/page.html')
+    c = RequestContext(request, {'doc': doc, 'atts': att, 'comments': comments, 'tags': tags})
+    
+    return HttpResponse(t.render(c))
+    
 def legacy_node(request, nid):
   try:
     node = LegacyNode.objects.get(node=nid)
@@ -91,3 +99,4 @@ def legacy_node(request, nid):
     node = get_object_or_404(ForeignNode, node=nid)
     return HttpResponsePermanentRedirect("http://hairymnstr.com/node/%d" % (node.node))
   return HttpResponsePermanentRedirect("/blog/" + node.post.slug)
+  

@@ -1,0 +1,11 @@
+<div class="figure">
+  {% if title %}<h4>{{figure.title}}</h4>{% endif %}
+  {% if thumbnail %}
+  <a href="{{figure.img.url}}">
+    <img src="{{figure.thumbnail.url}}" title="{{figure.title}}" alt="{{figure.caption}}"/>
+  </a>
+  {% else %}
+  <img src="{{figure.img.url}}" title="{{figure.title}}" alt="{{figure.caption}}"/>
+  {% endif %}
+  {% if caption %}<p>{{figure.caption}}</p>{% endif %}
+</div>

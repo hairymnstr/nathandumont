@@ -12,8 +12,8 @@
     <div class='pagination'>
         <ul>
         {% if prev %}
-        <li><a href='/'>&lt;&lt; first</a></li>
-        <li><a href='/page/{{ prev}}'>&lt; prev</a></li>
+        <li><a href='{{ page0 }}'>&lt;&lt; first</a></li>
+        <li><a href='{{ page0 }}page/{{ prev}}'>&lt; prev</a></li>
         {% else %}
         <li>&lt;&lt; first</li>
         <li>&lt; prev</li>
@@ -22,12 +22,12 @@
         {% if page == p %}
         <li>{{p}}</li>
         {% else %}
-        <li><a href='/page/{{p}}'>{{p}}</a></li>
+        <li><a href='{{ page0 }}page/{{p}}'>{{p}}</a></li>
         {% endif %}
         {% endfor %}
         {% if next %}
-        <li><a href='/page/{{ next }}'>next &gt;</a></li>
-        <li><a href='/page/{{ num_pages }}'>last &gt;&gt;</a></li>
+        <li><a href='{{ page0 }}page/{{ next }}'>next &gt;</a></li>
+        <li><a href='{{ page0 }}page/{{ num_pages }}'>last &gt;&gt;</a></li>
         {% else %}
         <li>next &gt;</li>
         <li>last &gt;&gt;</li>

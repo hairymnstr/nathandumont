@@ -2,9 +2,9 @@ from django.db import models
 import markdown
 import re
 from django.template.defaultfilters import slugify
-from django.template import loader, Context
 import datetime
-from filterprocessor import FilterProcessor
+import markdown, re
+from django.template import loader, Context
 
 from PIL import Image
 from cStringIO import StringIO
@@ -12,71 +12,117 @@ from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
 import os
 # Create your models here.
 
-def do_markdown(source):
-  summary_start = 0
-  summary_end = 1000
-  t = loader.get_template("figure.html")
-  figurent_template = loader.get_template("figurent.html")
-  gallery_template = loader.get_template("gallery.html")
-  
-  # generate automatic image thumbnails
-  r = re.compile("(\{[a-zA-Z0-9_\-]*\|[a-zA-Z0-9_\-:]*\})")
-  
-  tokens = []
-  pos = 0
-  output = ""
-  for m in r.finditer(source):
-    tokens.append((source[pos:m.start()], "literal"))
-    tokens.append((source[m.start():m.end()], "keyword"))
-    pos = m.end()
-    
-  if pos < len(source):
-    tokens.append((source[pos:], "literal"))
-  
-  for token in tokens:
-    if(token[1] == "literal"):
-      output += token[0]
-    else:
-      command, parameter = token[0].strip("{}").split("|")
-      
-      if command == "figure":
-        slug = parameter
-      
-        try:
-          fig = Figure.objects.get(label=slug)
-        except Figure.DoesNotExist:
-          fig = None
-        
-        if fig != None:
-          output += t.render(Context({"figure": fig}))
-      elif command == "figurent":
-        # figure with no thumbnail, show the img itself with no link
-        try:
-          fig = Figure.objects.get(label=parameter)
-        except Figure.DoesNotExist:
-          fig = None
-          
-        if fig != None:
-          output += figurent_template.render(Context({"figure": fig}))
-      elif command == "summary":
-        if parameter == "start":
-          summary_start = len(output)
-        elif parameter == "end":
-          summary_end = len(output)
-      elif command == "gallery":
-        slug = parameter
-        
-        try:
-          gallery = Gallery.objects.get(label=slug)
-        except Gallery.DoesNotExist:
-          gallery = None
-          
-        if gallery != None:
-          figs = Figure.objects.filter(gallery = gallery)
-          output += gallery_template.render(Context({"gallery": gallery, "figures": figs}))
-  
-  return markdown.markdown(output, output_format="html5"), markdown.markdown(output[summary_start:summary_end], output_format="html5")
+def attributes_to_dict(attributes):
+    d = {}
+    for pair in attributes.split(","):
+        kv = pair.split(":")
+        if len(kv) == 1:
+            d[kv[0].strip()] = True
+        else:
+            key = kv[0].strip()
+            val = kv[1].strip()
+            
+            if(val.lower() == "true"):
+                d[key] = True
+            elif(val.lower() == "false"):
+                d[key] = False
+            elif(val.lower() == "none"):
+                d[key] = None
+            else:
+                d[key] = val
+    return d
 
+class FilterProcessor:
+    summary_start = 0
+    summary_end = 1000
+    incode = False
+    code_language = None
+    code_start = 0
+    code_linenumbers = False
+    
+    def __init__(self, md):
+        self.source = md
+        self.figure_template = loader.get_template('blog/figure.html')
+        self.gallery_template = loader.get_template('blog/gallery.html')
+        self.tags = {
+            'figure': self.tag_figure, 
+            'summary': self.tag_summary,
+            'code': self.tag_code,
+            'gallery': self.tag_gallery,
+            }
+        
+    def run(self):
+        filter_re = re.compile(r'(?<!\\)\{(?P<tag_name>[a-zA-Z0-9\-_]+)\|(?P<attributes>.*?)\}')
+        
+        tokens = []
+        pos = 0
+        for m in filter_re.finditer(self.source):
+            tokens.append(("literal", self.source[pos:m.start()]))
+            tokens.append(("tag", m.group('tag_name'), m.group('attributes'), m.group(0)))
+            pos = m.end()
+            
+        if(pos < len(self.source)):
+            tokens.append(("literal", self.source[pos:]))
+            
+        self.output = ""
+        for token in tokens:
+            if(token[0] == "literal"):
+                self.output += token[1]
+            else:
+                if self.incode and token[1] != "code":
+                    self.output += token[3]
+                else:
+                    kw = attributes_to_dict(token[2])
+                    self.tags[token[1]](**kw)
+                
+    
+    def tag_figure(self, name=None, ref=None, thumbnail=True, title=True, caption=True):
+        if name:
+            """ This is a request to insert a named figure """
+            fig = Figure.objects.get(label=name)
+            self.output += self.figure_template.render(Context({"figure": fig,
+                                                                "thumbnail": thumbnail,
+                                                                "title": title,
+                                                                "caption": caption}))
+        else:
+            """ This is a request to link to a named figure within this page """
+            pass
+    
+    def tag_gallery(self, name):
+        gallery = Gallery.objects.get(label=name)
+        figures = Figure.objects.filter(gallery=gallery)
+        
+        self.output += self.gallery_template.render(Context({"figures": figures}))
+        
+    def tag_summary(self, start=False, end=False):
+        if start:
+            self.summary_start = len(self.output)
+        if end:
+            self.summary_end = len(self.output)
+
+    def tag_code(self, begin=False, language=None, linenumbers=False, end=False):
+        if end:
+            """ Found the end of the code tag, process the output since code start """
+            code_content = self.output[self.code_start:]
+            
+            # do syntax highlighting, linenumbers etc here
+            
+            self.output = (self.output[:self.code_start] + "<div class='code'><pre><code>"
+                + code_content + "</code></pre></div>")
+            self.incode = False
+        else:
+            """ Code start, store a global flag to treat the content as literal """
+            self.incode = True
+            self.code_language = language
+            self.code_linenumbers = linenumbers
+            self.code_start = len(self.output)
+            
+    def get_rendered(self):
+        return markdown.markdown(self.output, output_format="html5")
+        
+    def get_summary(self):
+        return markdown.markdown(self.output[self.summary_start:self.summary_end], output_format="html5")
+        
 class Post(models.Model):
   title = models.CharField(max_length=1000)
   slug = models.SlugField(blank=True, unique=True)
@@ -85,6 +131,7 @@ class Post(models.Model):
   rendered = models.TextField(blank=True)
   summary = models.TextField(blank=True)
   published = models.BooleanField(default=False)
+  special = models.BooleanField(default=False)
   section = models.ForeignKey('Section')
   
   def __unicode__(self):
@@ -97,7 +144,11 @@ class Post(models.Model):
     if not self.last_modified:
       self.last_modified = datetime.datetime.now()
       
-    self.rendered, self.summary = do_markdown(self.source)
+    pr = FilterProcessor(self.source)
+    pr.run()
+  
+    self.rendered = pr.get_rendered()
+    self.summary = pr.get_summary()
     super(Post, self).save(*args, **kwargs)
 
 class Figure(models.Model):
@@ -107,10 +158,15 @@ class Figure(models.Model):
   caption = models.TextField()
   label = models.SlugField(unique=True)
   gallery = models.ForeignKey('Gallery', blank=True, null=True)
-  
+
   def __unicode__(self):
     return self.label
     
+  def preview_tag(self):
+      return u'<img src="%s" alt="%s"/>' % (self.thumbnail.url, self.caption)
+  preview_tag.short_description = "Preview"
+  preview_tag.allow_tags = True
+      
   def make_thumbnail(self):
     if not self.img:
       return
