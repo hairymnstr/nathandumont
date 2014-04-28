@@ -29,7 +29,8 @@
     {% for comment in comments %}
     <strong>{{ comment.title }}</strong>
     <p class='pubdate'>{{comment.posted}} {{comment.posted_by}}</p>
-    {{comment.content}}
+    {{comment.content|safe}}
+    <hr/>
     {% endfor %}
     <p>Posting comments is not currently possible.  If you want to discuss this article
     you can reach me on <a href='https://twitter.com/hairymnstr'>twitter</a> or via
