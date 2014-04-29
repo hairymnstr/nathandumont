@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('blog.views',
-  url(r'^(?P<slug>[-\w]+)/?$', 'blog_page'),
+  url(r'^(?P<slug>[-\w]+)/?$', 'blog_page', name='post-view'),
 )

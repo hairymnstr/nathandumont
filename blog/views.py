@@ -91,7 +91,7 @@ def special_page(request, slug):
     c = RequestContext(request, {'doc': doc, 'atts': att, 'comments': comments, 'tags': tags})
     
     return HttpResponse(t.render(c))
-    
+
 def legacy_node(request, nid):
   try:
     node = LegacyNode.objects.get(node=nid)
