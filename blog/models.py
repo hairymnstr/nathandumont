@@ -10,6 +10,7 @@ from PIL import Image
 from cStringIO import StringIO
 from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
 import os
+import cgi
 # Create your models here.
 
 def attributes_to_dict(attributes):
@@ -136,7 +137,16 @@ class Post(models.Model):
   
   def __unicode__(self):
     return self.title
-    
+  
+  def get_tags(self):
+      return Tag.objects.filter(pk__in=PostTag.objects.filter(post=self).values_list('tag', flat=True))
+      
+  def get_attachments(self):
+      return Attachment.objects.filter(post=self)
+      
+  def get_comments(self):
+      return Comment.objects.filter(post=self, parent__isnull=True, approved=True).order_by('posted')
+      
   def save(self, *args, **kwargs):
     if not self.id:
       self.slug = slugify(self.title[:Post._meta.get_field('slug').max_length])
@@ -239,6 +249,31 @@ class Comment(models.Model):
   parent = models.ForeignKey('Comment', blank=True, null=True)
   approved = models.BooleanField(default=False)
   
+  def __unicode__(self):
+      return self.posted_by +": \"" + self.title + "\""
+      
+  def get_children(self):
+      return Comment.objects.filter(parent=self, approved=True).order_by('posted')
+      
+  def content_cleaned(self):
+      are = re.compile('<a .*?href=[\'"]([^\'"]+)[\'"].*?>([^<>]+)</a>')
+      
+      pos = 0
+      m = are.search(self.content, pos)
+      output = ""
+      while m:
+          output += cgi.escape(self.content[pos:m.start()])
+          output += "<a href=\""
+          output += m.group(1).replace("&amp;", "&").replace("&", "&amp;")
+          output += "\">"
+          output += cgi.escape(m.group(2))
+          output += "</a>"
+          pos = m.end()
+          m = are.search(self.content, pos)
+      output += cgi.escape(self.content[pos:])
+      
+      return "<p>" + "<br/>".join(output.splitlines()) + "</p>"
+      
   def save(self, *args, **kwargs):
     if not self.posted:
       self.posted = datetime.datetime.now()

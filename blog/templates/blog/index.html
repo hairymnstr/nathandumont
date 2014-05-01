@@ -3,10 +3,21 @@
 {% block area %}{{ area }}{% endblock %}
 {% block content %}
     {% for post in posts %}
-    <h2><a href='/blog/{{ post.slug }}'>{{post.title}}</a></h2>
-    <p class='pubdate'>Last updated: {{post.last_modified}}</p>
-    {{ post.summary|safe }}
-    <hr class='clear'/>
+    <div class='post-summary'>
+        <h2><a href='/blog/{{ post.slug }}'>{{post.title}}</a></h2>
+        <p class='pubdate'>Last updated: {{post.last_modified|date:"d M Y - H:i"}}</p>
+        {{ post.summary|safe }}
+        <dl class='tags'>
+            <dt>Section:</dt>
+            <dd><a href='/section/{{ post.section.url }}'>{{ post.section.title }}</a></dd>
+        </dl>
+        <dl class='tags'>
+            <dt>Tags:</dt>
+            {% for tag in post.get_tags %}
+                <dd><a href='/tag/{{tag.slug}}'>{{ tag.text }}</a>{% if not forloop.last %},{% endif %}</dd>
+            {% endfor %}
+        </dl>
+    </div>
     {% endfor %}
     
     <div class='pagination'>

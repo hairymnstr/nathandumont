@@ -1,36 +1,39 @@
 {% extends 'base.html' %}
 {% block title %}
-{{ doc.title }}
+{{ post.title }}
 {% endblock %}
 {% block area %}
-{{ doc.section.title }}
+{{ post.section.title }}
 {% endblock %}
 {% block content %}
     <header>
-      <h1>{{doc.title}}</h1>
-      <p class='pubdate'>Last updated: {{ doc.last_modified }}</p>
+      <h1>{{post.title}}</h1>
+      <p class='pubdate'>Last updated: {{ post.last_modified }}</p>
     </header>
-    {{ doc.rendered|safe }}
-    {% if atts %}
+    {{ post.rendered|safe }}
+    {% if post.get_attachments %}
     <table>
       <tr><th>Attachment</th><th>Last Update</th><th>Size</th></tr>
-    {% for att in atts %}
-      <tr><td><a href='{{att.file.url}}'>{{att.description}}</a></td><td>{{att.updated}}</td><td>{{att.file.size|filesizeformat}}</td></tr>
+    {% for att in post.get_attachments %}
+      <tr><td><a href='{{att.file.url}}'>{{att.description}}</a></td><td>{{att.updated}}</td><td>{{att.size|filesizeformat}}</td></tr>
     {% endfor %}
     </table>
     {% endif %}
     <h3>Tags</h3>
     <ul class='tags'>
-    {% for tag in tags %}
-    <li>{{tag.tag.text}}{% if not forloop.last %},{% endif %}</li>
+    {% for tag in post.get_tags %}
+    <li><a href='/tag/{{tag.slug}}'>{{tag.text}}</a>{% if not forloop.last %},{% endif %}</li>
     {% endfor %}
     </ul>
     <h3>Comments</h3>
-    {% for comment in comments %}
-    <strong>{{ comment.title }}</strong>
-    <p class='pubdate'>{{comment.posted}} {{comment.posted_by}}</p>
-    {{comment.content|safe}}
-    <hr/>
+    {% for comment, closings in comments %}
+    <div class='comment'>
+        <h4>{{ comment.title }}</h4>
+        <p class='pubdate'>{{comment.posted|date:"d M Y - H:i"}} {{comment.posted_by}}</p>
+        {{comment.content_cleaned|safe}}
+    {% for c in closings %}
+    </div>
+    {% endfor %}
     {% endfor %}
     <p>Posting comments is not currently possible.  If you want to discuss this article
     you can reach me on <a href='https://twitter.com/hairymnstr'>twitter</a> or via
