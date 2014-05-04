@@ -19,12 +19,16 @@
     {% endfor %}
     </table>
     {% endif %}
-    <h3>Tags</h3>
-    <ul class='tags'>
-    {% for tag in post.get_tags %}
-    <li><a href='/tag/{{tag.slug}}'>{{tag.text}}</a>{% if not forloop.last %},{% endif %}</li>
-    {% endfor %}
-    </ul>
+    <dl class='tags'>
+        <dt>Section:</dt>
+        <dd><a href='/section/{{post.section.url}}'>{{post.section.title}}</a></dd>
+    </dl>
+    <dl class='tags'>
+        <dt>Tags:</dt>
+        {% for tag in post.get_tags %}
+        <dd><a href='/tag/{{tag.slug}}'>{{tag.text}}</a>{% if not forloop.last %},{% endif %}</dd>
+        {% endfor %}
+    </dl>
     <h3>Comments</h3>
     {% for comment, closings in comments %}
     <div class='comment'>
