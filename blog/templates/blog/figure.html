@@ -1,4 +1,4 @@
-<div class="figure">
+<div class="{% if border %}figure{% else %}figure-noborder{% endif %}">
   {% if title %}<h4>{{figure.title}}</h4>{% endif %}
   {% if thumbnail %}
   <a href="{{figure.img.url}}">

@@ -199,6 +199,15 @@ img.img_right {
   text-align: center;
 }
 
+.figure-noborder {
+  float: left;
+  clear: left;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  font-size: 75%;
+  text-align: center;
+}
+    
 .figure h4 {
     margin: 0px 0px 5px 0px;
 }

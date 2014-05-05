@@ -77,14 +77,15 @@ class FilterProcessor:
                     self.tags[token[1]](**kw)
                 
     
-    def tag_figure(self, name=None, ref=None, thumbnail=True, title=True, caption=True):
+    def tag_figure(self, name=None, ref=None, thumbnail=True, title=True, caption=True, border=True):
         if name:
             """ This is a request to insert a named figure """
             fig = Figure.objects.get(label=name)
             self.output += self.figure_template.render(Context({"figure": fig,
                                                                 "thumbnail": thumbnail,
                                                                 "title": title,
-                                                                "caption": caption}))
+                                                                "caption": caption,
+                                                                "border": border}))
         else:
             """ This is a request to link to a named figure within this page """
             pass
