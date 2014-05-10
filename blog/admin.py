@@ -74,12 +74,22 @@ class FigureInline(admin.TabularInline):
     model = Figure
     fields = ('img', 'title', 'caption', 'label')
 
+class PostTagInline(admin.TabularInline):
+    model = PostTag
+    fields = ('tag',)
+    
 class FigureAdmin(admin.ModelAdmin):
     model = Figure
     readonly_fields = ('preview_tag',)
     fields = ('img', ('thumbnail', 'preview_tag'), 'title', 'caption', 'label', 'gallery')
     ordering = ('label',)
     
+class TagAdmin(admin.ModelAdmin):
+    model = Tag
+    fields = ('text', 'slug', 'legacyId')
+    ordering = ('text',)
+    list_display = ('text', 'slug')
+
 class PostAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
@@ -87,7 +97,7 @@ class PostAdmin(admin.ModelAdmin):
             'fields': (('title', 'slug'), 'source', 'section', 'last_modified', 'published', 'special')
         }),
     )
-    inlines = [AttachmentInline, LegacyNodeInline]
+    inlines = [AttachmentInline, PostTagInline, LegacyNodeInline]
     list_display = ('title', 'last_modified', 'section', 'published', 'special')
     readonly_fields = ('slug',)
     ordering = ('-last_modified',)
@@ -153,7 +163,7 @@ admin.site.register(Post, PostAdmin)
 admin.site.register(Figure, FigureAdmin)
 admin.site.register(Section)
 admin.site.register(Gallery, GalleryAdmin)
-admin.site.register(Tag)
+admin.site.register(Tag, TagAdmin)
 admin.site.register(PostTag)
 admin.site.register(Attachment)
 admin.site.register(LegacyNode)
