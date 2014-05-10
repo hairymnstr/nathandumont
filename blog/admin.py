@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from functools import update_wrapper
 from django.shortcuts import get_object_or_404
 from tidylib import tidy_document
+from django.shortcuts import render_to_response
 
 def check_url(url):
     if(url[0] == '/'):
@@ -108,7 +109,8 @@ class PostAdmin(admin.ModelAdmin):
 
         my_urls = patterns('',
             url(r'^link_status/$', self.admin_site.admin_view(self.link_status)),
-            url(r'^validation/(?P<post_id>\d+)/$', self.admin_site.admin_view(self.validation))
+            url(r'^validation/(?P<post_id>\d+)/$', self.admin_site.admin_view(self.validation)),
+            url(r'^(?P<post_id>\d+)/preview/$', self.admin_site.admin_view(self.preview)),
         )
         return my_urls + urls
     
@@ -151,6 +153,15 @@ class PostAdmin(admin.ModelAdmin):
         
         return HttpResponse(t.render(c))
         
+    def preview(self, request, post_id):
+        post = get_object_or_404(Post, id=post_id)
+        
+        return render_to_response("admin/blog/post/preview.html", {
+            'post': post,
+            'opts': self.model._meta,
+            'title': 'Preview for "%s"' % post.title,
+            }, context_instance=RequestContext(request))
+            
 class GalleryAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
