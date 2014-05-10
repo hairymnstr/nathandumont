@@ -40,6 +40,7 @@ class FilterProcessor:
     code_language = None
     code_start = 0
     code_linenumbers = False
+    refs_start = 0
     
     def __init__(self, md):
         self.source = md
@@ -50,6 +51,7 @@ class FilterProcessor:
             'summary': self.tag_summary,
             'code': self.tag_code,
             'gallery': self.tag_gallery,
+            'refs': self.tag_refs,
             }
         
     def run(self):
@@ -119,11 +121,18 @@ class FilterProcessor:
             self.code_linenumbers = linenumbers
             self.code_start = len(self.output)
             
+    def tag_refs(self, begin):
+        self.refs_start = len(self.output)
+        
     def get_rendered(self):
         return markdown.markdown(self.output, output_format="html5")
         
     def get_summary(self):
-        return markdown.markdown(self.output[self.summary_start:self.summary_end], output_format="html5")
+        if self.refs_start > 0:
+            summary = self.output[self.summary_start:self.summary_end] + self.output[self.refs_start:]
+        else:
+            summary = self.output[self.summary_start:self.summary_end]
+        return markdown.markdown(summary, output_format="html5")
         
 class Post(models.Model):
   title = models.CharField(max_length=1000)

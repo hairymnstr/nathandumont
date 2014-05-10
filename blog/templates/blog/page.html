@@ -27,6 +27,8 @@
         <dt>Tags:</dt>
         {% for tag in post.get_tags %}
         <dd><a href='/tag/{{tag.slug}}'>{{tag.text}}</a>{% if not forloop.last %},{% endif %}</dd>
+        {% empty %}
+        <dd>&nbsp;</dd>
         {% endfor %}
     </dl>
     <h3>Comments</h3>
