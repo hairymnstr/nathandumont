@@ -136,7 +136,7 @@ def special_page(request, slug):
     tags = PostTag.objects.filter(post=doc)
     
     t = loader.get_template('blog/page.html')
-    c = RequestContext(request, {'doc': doc, 'atts': att, 'comments': comments, 'tags': tags})
+    c = RequestContext(request, {'post': doc, 'atts': att, 'comments': None})
     
     return HttpResponse(t.render(c))
 
