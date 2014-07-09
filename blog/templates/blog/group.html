@@ -1,0 +1,31 @@
+<div class='related_posts'>
+<h3>This post is part of the {{group.group_name}} series</h3>
+{% if two_column and posts and externals %}
+<div class='left_column'>
+<h4>Related Posts</h4>
+{% for item in posts %}
+<a {% if item.post.slug == slug %}class='active'{% endif %} href='{% url blog.views.blog_page item.post.slug %}'>{{ item.post.title }}</a><br/>
+{% endfor %}
+</div>
+<div class='right_column'>
+<h4>External Links</h4>
+{% for item in externals %}
+<a href='{{ item.url }}'>{{ item.description }}</a><br/>
+{% endfor %}
+</div>
+{% else %}
+{% if posts %}
+<h4>Related Posts</h4>
+{% for item in posts %}
+<a {% if item.post.slug == slug %}class='active'{% endif %} href='{% url blog.views.blog_page item.post.slug %}'>{{ item.post.title }}</a><br/>
+{% endfor %}
+{% endif %}
+{% if externals %}
+<hr/>
+<h4>External Links</h4>
+{% for item in externals %}
+<a href='{{ item.url }}'>{{ item.description }}</a><br/>
+{% endfor %}
+{% endif %}
+{% endif %}
+</div>

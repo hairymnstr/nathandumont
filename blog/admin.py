@@ -1,4 +1,5 @@
-from blog.models import Post, Figure, LegacyNode, Attachment, Comment, Section, Gallery, Tag, PostTag, ForeignNode
+from blog.models import Post, Figure, LegacyNode, Attachment, Comment, Section, Gallery, Tag
+from blog.models import PostTag, ForeignNode, PostGroupItem, PostGroup, ExternalGroupItem
 from django.contrib import admin
 from django.conf.urls import patterns, url
 from django.template import RequestContext, loader
@@ -78,6 +79,12 @@ class FigureInline(admin.TabularInline):
 class PostTagInline(admin.TabularInline):
     model = PostTag
     fields = ('tag',)
+    
+class PostGroupItemInline(admin.TabularInline):
+    model = PostGroupItem
+    
+class ExternalGroupItemInline(admin.TabularInline):
+    model = ExternalGroupItem
     
 class FigureAdmin(admin.ModelAdmin):
     model = Figure
@@ -170,6 +177,10 @@ class GalleryAdmin(admin.ModelAdmin):
     )
     inlines = [FigureInline]
   
+class PostGroupAdmin(admin.ModelAdmin):
+    inlines = (PostGroupItemInline, ExternalGroupItemInline)
+    readonly_fields = ('slug',)
+    
 admin.site.register(Post, PostAdmin)
 admin.site.register(Figure, FigureAdmin)
 admin.site.register(Section)
@@ -180,3 +191,4 @@ admin.site.register(Attachment)
 admin.site.register(LegacyNode)
 admin.site.register(ForeignNode)
 admin.site.register(Comment)
+admin.site.register(PostGroup, PostGroupAdmin)

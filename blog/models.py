@@ -42,19 +42,22 @@ class FilterProcessor:
     code_linenumbers = False
     refs_start = 0
     
-    def __init__(self, md):
-        self.source = md
+    def __init__(self):
         self.figure_template = loader.get_template('blog/figure.html')
         self.gallery_template = loader.get_template('blog/gallery.html')
+        self.group_template = loader.get_template('blog/group.html')
         self.tags = {
             'figure': self.tag_figure, 
             'summary': self.tag_summary,
             'code': self.tag_code,
             'gallery': self.tag_gallery,
             'refs': self.tag_refs,
+            'group': self.post_group,
             }
         
-    def run(self):
+    def run(self, md, slug):
+        self.source = md
+        self.slug = slug
         filter_re = re.compile(r'(?<!\\)\{(?P<tag_name>[a-zA-Z0-9\-_]+)\|(?P<attributes>.*?)\}')
         
         tokens = []
@@ -134,6 +137,17 @@ class FilterProcessor:
             summary = self.output[self.summary_start:self.summary_end]
         return markdown.markdown(summary, output_format="html5")
         
+    def post_group(self, name, two_column=False):
+        postgroup = PostGroup.objects.get(slug=name)
+        posts = PostGroupItem.objects.filter(group=postgroup)
+        externals = ExternalGroupItem.objects.filter(group=postgroup)
+        
+        self.output += self.group_template.render(Context({"slug": self.slug,
+                                                           "group": postgroup,
+                                                           "posts": posts,
+                                                           "externals": externals,
+                                                           "two_column": two_column}))
+        
 class Post(models.Model):
   title = models.CharField(max_length=1000)
   slug = models.SlugField(blank=True, unique=True)
@@ -164,8 +178,8 @@ class Post(models.Model):
     if not self.last_modified:
       self.last_modified = datetime.datetime.now()
       
-    pr = FilterProcessor(self.source)
-    pr.run()
+    pr = FilterProcessor()
+    pr.run(self.source, self.slug)
   
     self.rendered = pr.get_rendered()
     self.summary = pr.get_summary()
@@ -335,3 +349,37 @@ class PostTag(models.Model):
   
   def __unicode__(self):
     return self.post.title + " [" + self.tag.text + "]"
+
+class PostGroup(models.Model):
+    group_name = models.CharField(max_length=100)
+    slug = models.SlugField(blank=True, unique=True)
+    
+    def __unicode__(self):
+        return self.group_name
+          
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.slug = slugify(self.group_name[:PostGroup._meta.get_field('slug').max_length])
+        
+        super(PostGroup, self).save(*args, **kwargs)
+        
+class PostGroupItem(models.Model):
+    group = models.ForeignKey('PostGroup')
+    post = models.ForeignKey('Post')
+    weight = models.IntegerField(default=0)
+    is_summary = models.BooleanField(default=False)
+    
+    def __unicode__(self):
+        return "[" + self.group.group_name + "] " + self.post.title
+        
+class ExternalGroupItem(models.Model):
+    group = models.ForeignKey('PostGroup')
+    url = models.URLField()
+    description = models.CharField(max_length=100, blank=True)
+    weight = models.IntegerField(default=0)
+    
+    def __unicode__(self):
+        if self.description == "":
+            return "[" + self.group.group_name + "] " + self.url
+        else:
+            return "[" + self.group.group_name + "] " + self.description

@@ -47,8 +47,11 @@ article {
 }
 
 #page_header {  
+  display: block;
   width: 950px;
   margin: 0px auto;
+  font-size: 28pt;
+  font-weight: bold;
 }
 
 
@@ -326,4 +329,24 @@ ul.tags li {
     list-style-image: none;
     list-style-type: none;
     display: inline;
+}
+
+.related_posts {
+    background: #202020;
+    overflow: auto;
+    padding: 10px;
+}
+
+.related_posts .right_column {
+    width: 50%;
+    float: left;
+}
+
+.related_posts .left_column {
+    width: 50%;
+    float: left;
+}
+
+.related_posts h3 {
+    margin: 0px;
 }
