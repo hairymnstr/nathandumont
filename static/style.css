@@ -271,11 +271,14 @@ img.img_right {
 /* end of figure styling */
 
 .code {
-  border: 1px solid white;
-  color: #fff;
-  background: #909090;
+  color: black;
+  background: #eeeeee;
   padding: 5px;
   overflow: hidden;
+}
+
+pre {
+  margin: 0px;
 }
 
 footer {
