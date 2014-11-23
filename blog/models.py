@@ -1,16 +1,13 @@
 from django.db import models
-import markdown
-import re
 from django.template.defaultfilters import slugify
-import datetime
-import markdown, re
+from django.conf import settings
+import datetime, markdown, re
 from django.template import loader, Context
 
 from PIL import Image
 from cStringIO import StringIO
 from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
-import os
-import cgi
+import os, cgi
 # Create your models here.
 
 def attributes_to_dict(attributes):
@@ -157,6 +154,7 @@ class Post(models.Model):
   summary = models.TextField(blank=True)
   published = models.BooleanField(default=False)
   special = models.BooleanField(default=False)
+  reviewed = models.BooleanField(default=False)
   section = models.ForeignKey('Section')
   
   def __unicode__(self):
@@ -205,20 +203,32 @@ class Figure(models.Model):
     if not self.img:
       return
     
-    if not isinstance(self.img.file, UploadedFile):
+    if (not isinstance(self.img.file, UploadedFile)) and (self.thumbnail):
       return
       
     THUMBNAIL_SIZE = (150, 150)
     
-    if self.img.file.content_type == 'image/jpeg':
-      pil_type = 'jpeg'
-      file_extension = 'jpg'
-    elif self.img.file.content_type == 'image/png':
-      pil_type = 'png'
-      file_extension = 'png'
-    
+    if isinstance(self.img.file, UploadedFile):
+      if self.img.file.content_type == 'image/jpeg':
+        pil_type = 'jpeg'
+        file_extension = 'jpg'
+        content_type = 'image/jpeg'
+      elif self.img.file.content_type == 'image/png':
+        pil_type = 'png'
+        file_extension = 'png'
+        content_type = 'image/png'
+    else:
+      if os.path.splitext(self.img.name)[1].strip(".").lower() == "jpg":
+        pil_type = 'jpeg'
+        file_extension = 'jpg'
+        content_type = 'image/jpeg'
+      else:
+        pil_type = 'png'
+        file_extension = 'png'
+        content_type = 'image/png'
+        
     image = Image.open(StringIO(self.img.read()))
-    
+        
     image.thumbnail(THUMBNAIL_SIZE, Image.ANTIALIAS)
     
     temp = StringIO()
@@ -226,10 +236,13 @@ class Figure(models.Model):
     temp.seek(0)
     
     fd = SimpleUploadedFile(os.path.split(self.img.name)[-1], 
-                            temp.read(), content_type=self.img.file.content_type)
+                            temp.read(), content_type=content_type)
     
-    self.thumbnail.save("%s.preview.%s" % (os.path.splitext(fd.name)[0], file_extension), 
-                        fd, save=False)
+    thumbnail_name = "images/%s.preview.%s" % (os.path.splitext(fd.name)[0], file_extension)
+
+    if(os.path.exists(os.path.join(settings.MEDIA_ROOT, thumbnail_name))):
+      os.remove(os.path.join(settings.MEDIA_ROOT, thumbnail_name))
+    self.thumbnail.save(thumbnail_name, fd, save=False)
     
   def save(self, *args, **kwargs):
     self.make_thumbnail()
@@ -238,6 +251,9 @@ class Figure(models.Model):
 class Gallery(models.Model):
   title = models.CharField(max_length=100)
   label = models.SlugField(unique=True, blank=True)
+  hidden = models.BooleanField(default=True)
+  description = models.TextField(blank=True, default="")
+  gallery_date = models.DateTimeField(default=datetime.datetime.now, blank=True)
   
   def __unicode__(self):
     return self.title + " (" + self.label + ")"
@@ -247,6 +263,9 @@ class Gallery(models.Model):
       self.label = slugify(self.title)
       
     super(Gallery, self).save(*args, **kwargs)
+    
+  def cover_image(self):
+    return Figure.objects.filter(gallery=self.id)[0]
 
 class Attachment(models.Model):
   file = models.FileField(upload_to="uploads")

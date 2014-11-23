@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='{{STATIC_URL}}style.css'/>
+    <link rel='shortcut icon' href='{{STATIC_URL}}hairymnstr_favicon.ico'/>
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <span id='page_header'>{% block area %}{% endblock %}</span>
+    <nav>
+      <a href='/'>Home</a>
+      <a href='/gallery'>Pictures</a>
+      <a href='/section/sci-fi'>Sci-Fi</a>
+      <a href='/section/humour'>Humour</a>
+      <a href='/section/computing'>Computing</a>
+      <a href='/section/retro-computing'>Retro Computing</a>
+      <a href='/author'>Author</a>
+    </nav>
+    <div id='bar'><div id='link'><a href='/'>hairymnstr.com</a></div></div>
+    <div id='page'>
+      <article>
+        {% block content %}{% endblock %}
+      </article>
+      <div id='right'>
+        {% include "right_hm.html" %}
+      </div>
+    </div>
+    <footer>
+      <p class='copyright'>Copyright Nathan Dumont 2005 - 2014 :: This work is licensed under the Creative Commons <a href='http://creativecommons.org/licenses/by-sa/3.0/'>BY-SA</a> 3.0 License.</p>
+    </footer>
+  </body>
+</html>

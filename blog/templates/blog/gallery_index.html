@@ -1,0 +1,19 @@
+{% extends base_template %}
+{% block title %}{{ site.domain }} : Galleries{% endblock %}
+{% block area %}Galleries{% endblock %}
+{% block content %}
+    <div class='gallery'>
+    {% for gallery in galleries %}
+        <div class="figure">
+            <h4><a href="/gallery/{{gallery.label}}/">{{gallery.title}}</a></h4>
+            <div class="figure-image">
+                <a href="/gallery/{{gallery.label}}/">
+                    <span class="helper"></span><img src="{{gallery.cover_image.thumbnail.url}}" title="{{gallery.title}}" alt="{{gallery.cover_image.caption}}"/>
+                </a>
+            </div>
+            <p>{{gallery.description|safe}}</p>
+            <p class='pubdate'>{{gallery.gallery_date|date:"d M Y"}}</p>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}

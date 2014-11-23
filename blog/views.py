@@ -1,11 +1,16 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.template import RequestContext, loader
 from django.shortcuts import get_object_or_404
-from blog.models import Post, LegacyNode, ForeignNode, Attachment, Comment, Section, PostTag, Tag
+from blog.models import Post, LegacyNode, ForeignNode, Attachment, Comment, Section, PostTag, Tag, Gallery
 from math import ceil
+from django.contrib.sites.models import Site
 # Create your views here.
 
+def template_name():
+  return "base_" + Site.objects.get_current().domain + ".html"
+
 def home(request, offset="1"):
+  current_site = Site.objects.get_current()
   limit = int(offset) - 1
   posts = Post.objects.filter(published=True, special=False).order_by('-last_modified')[limit*10:(limit+1)*10]
   
@@ -23,8 +28,9 @@ def home(request, offset="1"):
       next_page = False
   
   t = loader.get_template('blog/index.html')
-  c = RequestContext(request, {'posts': posts, 'area': 'Home', 
-                               'title': 'nathandumont.com : Home', 
+  c = RequestContext(request, {'base_template': template_name(),
+                               'posts': posts, 'area': 'Home', 
+                               'title': current_site.domain + ' : Home', 
                                'num_pages': pages,
                                'pages': range(1, pages+1),
                                'page': limit + 1,
@@ -35,6 +41,7 @@ def home(request, offset="1"):
   return HttpResponse(t.render(c))
   
 def section(request, section, offset="1"):
+  current_site = Site.objects.get_current()
   limit = int(offset) - 1
   sec = get_object_or_404(Section, url=section)
   posts = Post.objects.filter(published=True, special=False, section=sec).order_by('-last_modified')[limit*10:(limit+1)*10]
@@ -53,8 +60,9 @@ def section(request, section, offset="1"):
       next_page = False
   
   t = loader.get_template('blog/index.html')
-  c = RequestContext(request, {'posts': posts, 'area': sec.title, 
-                               'title': 'nathandumont.com : ' + sec.title, 
+  c = RequestContext(request, {'base_template': template_name(),
+                               'posts': posts, 'area': sec.title, 
+                               'title': current_site.domain + ' : ' + sec.title, 
                                'num_pages': pages,
                                'pages': range(1, pages+1),
                                'page': limit + 1,
@@ -65,6 +73,7 @@ def section(request, section, offset="1"):
   return HttpResponse(t.render(c))
 
 def tagged_posts(request, tag_name, offset="1"):
+  current_site = Site.objects.get_current()
   limit = int(offset) - 1
   tag = get_object_or_404(Tag, slug=tag_name)
   post_tags = PostTag.objects.filter(tag=tag).values_list('post', flat=True)
@@ -84,8 +93,10 @@ def tagged_posts(request, tag_name, offset="1"):
       next_page = False
   
   t = loader.get_template('blog/index.html')
-  c = RequestContext(request, {'posts': posts, 'area': tag.text, 
-                               'title': 'nathandumont.com : ' + tag.text, 
+  c = RequestContext(request, {'base_template': template_name(),
+                               'posts': posts,
+                               'area': tag.text, 
+                               'title': current_site.domain + ' : ' + tag.text, 
                                'num_pages': pages,
                                'pages': range(1, pages+1),
                                'page': limit + 1,
@@ -103,6 +114,7 @@ def tree_comments(comment, depth):
     return comm_list
         
 def blog_page(request, slug):
+  current_site = Site.objects.get_current()
   post = get_object_or_404(Post, slug=slug, published=True, special=False)
   
   att = Attachment.objects.filter(post=post).all()
@@ -122,11 +134,16 @@ def blog_page(request, slug):
     dl.append((recursed_comments[-1][0], range(recursed_comments[-1][1]+1)))
   
   t = loader.get_template('blog/page.html')
-  c = RequestContext(request, {'post': post, 'atts': att, 'comments': dl})
+  c = RequestContext(request, {'base_template': template_name(),
+                               'site': current_site,
+                               'post': post, 
+                               'atts': att, 
+                               'comments': dl})
   
   return HttpResponse(t.render(c))
 
 def special_page(request, slug):
+    current_site = Site.objects.get_current()
     doc = get_object_or_404(Post, slug=slug, published=True, special=True)
     
     att = Attachment.objects.filter(post=doc)
@@ -136,7 +153,11 @@ def special_page(request, slug):
     tags = PostTag.objects.filter(post=doc)
     
     t = loader.get_template('blog/page.html')
-    c = RequestContext(request, {'post': doc, 'atts': att, 'comments': None})
+    c = RequestContext(request, {'base_template': template_name(),
+                                 'site': current_site,
+                                 'post': doc, 
+                                 'atts': att, 
+                                 'comments': None})
     
     return HttpResponse(t.render(c))
 
@@ -148,3 +169,24 @@ def legacy_node(request, nid):
     return HttpResponsePermanentRedirect("http://hairymnstr.com/node/%d" % (node.node))
   return HttpResponsePermanentRedirect("/blog/" + node.post.slug)
   
+def gallery_index(request):
+    current_site = Site.objects.get_current()
+    galleries = Gallery.objects.filter(hidden=False).order_by('-gallery_date')
+    
+    t = loader.get_template('blog/gallery_index.html')
+    c = RequestContext(request, {'base_template': template_name(),
+                                 'site': current_site,
+                                 'galleries': galleries})
+    
+    return HttpResponse(t.render(c))
+
+def gallery(request, slug):
+    current_site = Site.objects.get_current()
+    gallery = get_object_or_404(Gallery, label=slug)
+    
+    t = loader.get_template('blog/gallery_live.html')
+    c = RequestContext(request, {'base_template': template_name(),
+                                 'site': current_site,
+                                 'gallery': gallery})
+    
+    return HttpResponse(t.render(c))

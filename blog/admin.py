@@ -102,11 +102,11 @@ class PostAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'classes': ('monospace',),
-            'fields': (('title', 'slug'), 'source', 'section', 'last_modified', 'published', 'special')
+            'fields': (('title', 'slug'), 'source', 'section', 'last_modified', 'published', 'special', 'reviewed')
         }),
     )
     inlines = [AttachmentInline, PostTagInline, LegacyNodeInline]
-    list_display = ('title', 'last_modified', 'section', 'published', 'special')
+    list_display = ('title', 'last_modified', 'section', 'published', 'special', 'reviewed')
     readonly_fields = ('slug',)
     ordering = ('-last_modified',)
     model = Post
@@ -172,10 +172,11 @@ class PostAdmin(admin.ModelAdmin):
 class GalleryAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('title', 'label')
+            'fields': ('title', 'label', 'description', 'gallery_date', 'hidden')
         }),
     )
     inlines = [FigureInline]
+    list_display = ('title', 'label', 'hidden')
   
 class PostGroupAdmin(admin.ModelAdmin):
     inlines = (PostGroupItemInline, ExternalGroupItemInline)

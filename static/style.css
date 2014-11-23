@@ -3,8 +3,7 @@ body {
   color: #e0e0e0;
   padding: 0px;
   margin: 0px;
-  font-family: sans-serif;
-  font-size: 10pt;
+  font: 12px/170% sans-serif;
 }
 
 #page {
@@ -51,6 +50,7 @@ article {
   width: 950px;
   margin: 0px auto;
   font-size: 28pt;
+  line-height: 120%;
   font-weight: bold;
 }
 
@@ -75,6 +75,7 @@ ul {
 
 .tags {
     margin: 2px 0px;
+    clear: both;
 }
 
 .tags dt {
@@ -186,6 +187,15 @@ img.img_right {
   border: none;
 }
 
+blockquote {
+  border-left: 3px solid #ffa000;
+  background: #333333;
+  padding-left: 5px;
+}
+
+blockquote cite {
+  white-space: nowrap;
+}
 /* Figure styling */
 
 
@@ -198,7 +208,7 @@ img.img_right {
   margin-bottom: 10px;
   border: 1px solid #303030;
   background: #101010;
-  font-size: 75%;
+  font: 75%/110% sans-serif;
   text-align: center;
 }
 
@@ -221,13 +231,21 @@ img.img_right {
 }
 
 .figure-image {
-    width: 150px;
-    height: 150px;
-    text-align: center;
+  width: 150px;
+  height: 150px;
+  text-align: center;
+  margin: 1em 0;
+  white-space: nowrap;  
 }
 
-.figure-image a img {
-    margin: auto auto;
+.figure-image a {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;  
+}
+
+.figure img {
+  vertical-align: middle;
 }
 
 .figure_nothumb {
@@ -258,9 +276,16 @@ img.img_right {
 
 .gallery .figure {
   clear: none;
-  height: 250px;
+  height: 230px;
   overflow: hidden;
   margin-bottom: 10px;
+  vertical-align: middle;
+}
+
+.gallery .helper {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
 }
 
 .gallery .end {
