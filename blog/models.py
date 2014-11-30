@@ -187,7 +187,7 @@ class Figure(models.Model):
   img = models.ImageField(upload_to="images")
   thumbnail = models.ImageField(upload_to="images", blank=True, null=True)
   title = models.CharField(max_length=50)
-  caption = models.TextField()
+  caption = models.TextField(blank=True, null=True)
   label = models.SlugField(unique=True)
   gallery = models.ForeignKey('Gallery', blank=True, null=True)
 
@@ -244,8 +244,39 @@ class Figure(models.Model):
       os.remove(os.path.join(settings.MEDIA_ROOT, thumbnail_name))
     self.thumbnail.save(thumbnail_name, fd, save=False)
     
+  def scale_image(self):
+    if not isinstance(self.img.file, UploadedFile):
+      return
+    
+    if self.img.file.content_type == 'image/jpeg':
+      pil_type = 'jpeg'
+      file_extension = '.jpg'
+    elif self.img.file.content_type == 'image/png':
+      pil_type = 'png'
+      file_extension = '.png'
+    
+    if hasattr(self.img.file, 'temporary_file_path'):
+      image = Image.open(self.img.file.temporary_file_path())
+    else:
+      # thumbnail will have already read the file from memory
+      self.img.file.seek(0)
+      image = Image.open(StringIO(self.img.file.read()))
+    
+    image.thumbnail((1600, 1600), Image.ANTIALIAS)
+    
+    temp = StringIO()
+    image.save(temp, pil_type)
+    temp.seek(0)
+    
+    fd = SimpleUploadedFile(os.path.splitext(self.img.name)[0] + file_extension, 
+                            temp.read(),
+                            content_type=self.img.file.content_type)
+    
+    self.img.save(os.path.splitext(self.img.name)[0] + file_extension, fd, save=False)
+    
   def save(self, *args, **kwargs):
     self.make_thumbnail()
+    self.scale_image()
     super(Figure, self).save(*args, **kwargs)
 
 class Gallery(models.Model):
