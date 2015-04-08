@@ -88,9 +88,10 @@ class ExternalGroupItemInline(admin.TabularInline):
     
 class FigureAdmin(admin.ModelAdmin):
     model = Figure
-    readonly_fields = ('preview_tag',)
-    fields = ('img', ('thumbnail', 'preview_tag'), 'title', 'caption', 'label', 'gallery')
-    ordering = ('label',)
+    readonly_fields = ('preview_tag', 'modified', 'created')
+    fields = ('img', ('thumbnail', 'preview_tag'), 'title', 'caption', 'label', ('created', 'modified'), 'gallery')
+    ordering = ('-created',)
+    list_display = ('title', 'modified', 'created', 'label', 'gallery')
     
 class TagAdmin(admin.ModelAdmin):
     model = Tag

@@ -190,6 +190,8 @@ class Figure(models.Model):
   caption = models.TextField(blank=True, null=True)
   label = models.SlugField(unique=True)
   gallery = models.ForeignKey('Gallery', blank=True, null=True)
+  created = models.DateTimeField(auto_now_add=True)
+  modified = models.DateTimeField(auto_now=True)
 
   def __unicode__(self):
     return self.label
