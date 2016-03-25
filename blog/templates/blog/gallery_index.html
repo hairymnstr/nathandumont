@@ -4,16 +4,19 @@
 {% block content %}
     <div class='gallery'>
     {% for gallery in galleries %}
-        <div class="figure">
-            <h4><a href="/gallery/{{gallery.label}}/">{{gallery.title}}</a></h4>
-            <div class="figure-image">
-                <a href="/gallery/{{gallery.label}}/">
-                    <span class="helper"></span><img src="{{gallery.cover_image.thumbnail.url}}" title="{{gallery.title}}" alt="{{gallery.cover_image.caption}}"/>
-                </a>
-            </div>
-            <p>{{gallery.description|safe}}</p>
-            <p class='pubdate'>{{gallery.gallery_date|date:"d M Y"}}</p>
-        </div>
+        <div class='gallery-responsive'>
+			<div class='gallery-frame'>
+				<div class='gallery-image'>
+					<div class='gallery-image-inner'>
+                		<a href="/gallery/{{gallery.label}}/">
+                    		<span class="helper"></span><img src="{{gallery.cover_image.thumbnail.url}}" title="{{gallery.title}}" alt="{{gallery.cover_image.caption}}"/>
+                		</a>
+            		</div>
+				</div>
+				<p class='w3-container'><strong>{{gallery.title}}</strong> {{gallery.description|safe}}<br/>
+            	<span class='pubdate'>{{gallery.gallery_date|date:"d M Y"}}</span></p>
+			</div>
+        </div>{% if forloop.last %}<div class='gallery-clearfix'></div>{% elif forloop.counter|divisibleby:2 or forloop.counter|divisibleby:3 %}<div class='{% if forloop.counter|divisibleby:2 %}gallery-clearfix2 {% endif %}{% if forloop.counter|divisibleby:3 %}gallery-clearfix3{% endif %}'></div>{% endif %}
     {% endfor %}
     </div>
 {% endblock %}

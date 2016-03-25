@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel='stylesheet' href='{{STATIC_URL}}style.css'/>
     <link rel='shortcut icon' href='{{STATIC_URL}}hairymnstr_favicon.ico'/>
     <title>{% block title %}{% endblock %}</title>
+	<meta name='viewport' content='width=device-width, internal-scale=1'/>
+	<link rel='stylesheet' href='{{STATIC_URL}}w3.css'/>
+	<link rel='stylesheet' href='{{STATIC_URL}}style.css'/>
   </head>
   <body>
     <span id='page_header'>{% block area %}{% endblock %}</span>
-    <nav>
+    <nav class='w3-topnav nd-nav'>
       <a href='/'>Home</a>
       <a href='/gallery'>Pictures</a>
       <a href='/section/sci-fi'>Sci-Fi</a>
@@ -16,8 +18,8 @@
       <a href='/author'>Author</a>
     </nav>
     <div id='bar'><div id='link'><a href='/'>hairymnstr.com</a></div></div>
-    <div id='page'>
-      <article>
+    <div class='w3-row nd-page'>
+      <article class='w3-col m8 l8 w3-container'>
         {% block content %}{% endblock %}
       </article>
       <div id='right'>
@@ -25,7 +27,7 @@
       </div>
     </div>
     <footer>
-      <p class='copyright'>Copyright Nathan Dumont 2005 - 2014 :: This work is licensed under the Creative Commons <a href='http://creativecommons.org/licenses/by-sa/3.0/'>BY-SA</a> 3.0 License.</p>
+      <p class='copyright'>Copyright Nathan Dumont 2005 - 2016 :: This work is licensed under the Creative Commons <a href='http://creativecommons.org/licenses/by-sa/3.0/'>BY-SA</a> 3.0 License.</p>
     </footer>
   </body>
 </html>
