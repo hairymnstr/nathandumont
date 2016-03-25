@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
-from django.template import RequestContext, loader
+from django.template import RequestContext, loader, Context
 from django.shortcuts import get_object_or_404
 from blog.models import Post, LegacyNode, ForeignNode, Attachment, Comment, Section, PostTag, Tag, Gallery
 from math import ceil
@@ -9,6 +9,27 @@ from django.contrib.sites.models import Site
 def template_name():
   return "base_" + Site.objects.get_current().domain + ".html"
 
+def pagination(num_posts, limit, url_base):
+    pages = int(ceil(num_posts / 10.0))
+  
+    if(limit > 0):
+        prev_page = limit
+    else:
+        prev_page = False
+    if(limit < pages-1):
+        next_page = limit + 2
+    else:
+        next_page = False
+
+    t = loader.get_template('blog/paginator.html')
+    c = Context({'num_pages': pages,
+                 'pages': range(1, pages+1),
+                 'page': limit + 1,
+                 'next': next_page,
+                 'prev': prev_page,
+                 'page0': url_base})
+    return t.render(c)
+
 def home(request, offset="1"):
   current_site = Site.objects.get_current()
   limit = int(offset) - 1
@@ -16,28 +37,14 @@ def home(request, offset="1"):
   
   num_posts = Post.objects.filter(published=True, special=False).count()
   
-  pages = int(ceil(num_posts / 10.0))
-  
-  if(limit > 0):
-      prev_page = limit
-  else:
-      prev_page = False
-  if(limit < pages-1):
-      next_page = limit + 2
-  else:
-      next_page = False
+  paginator = pagination(num_posts, limit, '/')
   
   t = loader.get_template('blog/index.html')
   c = RequestContext(request, {'base_template': template_name(),
                                'posts': posts, 'area': 'Home', 
                                'title': current_site.domain + ' : Home', 
-                               'num_pages': pages,
-                               'pages': range(1, pages+1),
-                               'page': limit + 1,
-                               'next': next_page,
-                               'prev': prev_page,
-                               'page0': '/'})
-  
+                               'paginator': paginator})
+ 
   return HttpResponse(t.render(c))
   
 def section(request, section, offset="1"):
@@ -47,28 +54,13 @@ def section(request, section, offset="1"):
   posts = Post.objects.filter(published=True, special=False, section=sec).order_by('-last_modified')[limit*10:(limit+1)*10]
   
   num_posts = Post.objects.filter(published=True, special=False, section=sec).count()
-  
-  pages = int(ceil(num_posts / 10.0))
-  
-  if(limit > 0):
-      prev_page = limit
-  else:
-      prev_page = False
-  if(limit < pages-1):
-      next_page = limit + 2
-  else:
-      next_page = False
+  paginator = pagination(num_posts, limit, '/section/' + section + '/') 
   
   t = loader.get_template('blog/index.html')
   c = RequestContext(request, {'base_template': template_name(),
                                'posts': posts, 'area': sec.title, 
-                               'title': current_site.domain + ' : ' + sec.title, 
-                               'num_pages': pages,
-                               'pages': range(1, pages+1),
-                               'page': limit + 1,
-                               'next': next_page,
-                               'prev': prev_page,
-                               'page0': '/section/' + section + '/'})
+                               'title': current_site.domain + ' : ' + sec.title,
+                               'paginator': paginator}) 
   
   return HttpResponse(t.render(c))
 
@@ -80,29 +72,14 @@ def tagged_posts(request, tag_name, offset="1"):
   posts = Post.objects.filter(published=True, special=False, pk__in=post_tags).order_by('-last_modified')[limit*10:(limit+1)*10]
   
   num_posts = Post.objects.filter(published=True, special=False, pk__in=post_tags).count()
-  
-  pages = int(ceil(num_posts / 10.0))
-  
-  if(limit > 0):
-      prev_page = limit
-  else:
-      prev_page = False
-  if(limit < pages-1):
-      next_page = limit + 2
-  else:
-      next_page = False
+  paginator = pagination(num_posts, limit, '/tag/' + tag_name + '/')
   
   t = loader.get_template('blog/index.html')
   c = RequestContext(request, {'base_template': template_name(),
                                'posts': posts,
                                'area': tag.text, 
-                               'title': current_site.domain + ' : ' + tag.text, 
-                               'num_pages': pages,
-                               'pages': range(1, pages+1),
-                               'page': limit + 1,
-                               'next': next_page,
-                               'prev': prev_page,
-                               'page0': '/tag/' + tag_name + '/'})
+                               'title': current_site.domain + ' : ' + tag.text,
+                               'paginator': paginator})
   
   return HttpResponse(t.render(c))
 

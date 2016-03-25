@@ -1,0 +1,10 @@
+    <div class='nd-pagination'>
+        <ul class='w3-pagination'>
+            <li><a href='{{ page0 }}'>&laquo;</a></li>
+            {% for p in pages %}
+            <li><a{% if page == p %} class='nd-light-blue'{% endif %} href='{{ page0 }}page/{{p}}'>{{p}}</a></li>
+            {% endfor %}
+            <li><a href='{{ page0 }}page/{{ num_pages }}'>&raquo;</a></li>
+        </ul>
+    </div>
+

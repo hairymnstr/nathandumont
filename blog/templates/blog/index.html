@@ -2,6 +2,8 @@
 {% block title %}{{ title }}{% endblock %}
 {% block area %}{{ area }}{% endblock %}
 {% block content %}
+    {{ paginator }}
+
     {% for post in posts %}
     <div class='post-summary'>
         <h2><a href='/blog/{{ post.slug }}'>{{post.title}}</a></h2>
@@ -21,30 +23,6 @@
         </dl>
     </div>
     {% endfor %}
-    
-    <div class='pagination'>
-        <ul>
-        {% if prev %}
-        <li><a href='{{ page0 }}'>&lt;&lt; first</a></li>
-        <li><a href='{{ page0 }}page/{{ prev}}'>&lt; prev</a></li>
-        {% else %}
-        <li>&lt;&lt; first</li>
-        <li>&lt; prev</li>
-        {% endif %}
-        {% for p in pages %}
-        {% if page == p %}
-        <li>{{p}}</li>
-        {% else %}
-        <li><a href='{{ page0 }}page/{{p}}'>{{p}}</a></li>
-        {% endif %}
-        {% endfor %}
-        {% if next %}
-        <li><a href='{{ page0 }}page/{{ next }}'>next &gt;</a></li>
-        <li><a href='{{ page0 }}page/{{ num_pages }}'>last &gt;&gt;</a></li>
-        {% else %}
-        <li>next &gt;</li>
-        <li>last &gt;&gt;</li>
-        {% endif %}
-        </ul>
-    </div>
+
+    {{ paginator }} 
 {% endblock %}

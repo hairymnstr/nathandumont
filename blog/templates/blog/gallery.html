@@ -1,13 +1,14 @@
-<div class='gallery'>
-  {% for figure in figures %}
-  <div class="figure">
-  <h4>{{figure.title}}</h4>
-  <div class="figure-image">
+<div class="gallery">{% for figure in figures %}
+  <div class="gallery-responsive">
+  <div class="gallery-frame">
+  <div class="gallery-image">
+  <div class="gallery-image-inner">
   <a href="{{figure.img.url}}">
     <span class="helper"></span><img src="{{figure.thumbnail.url}}" title="{{figure.title}}" alt="{{figure.caption}}"/>
   </a>
   </div>
-  <p>{{figure.caption|safe}}</p>
   </div>
-  {% endfor %}
+  <p class="w3-container"><strong>{{figure.title}}:</strong> {{figure.caption|safe}}</p>
+  </div>
+  </div>{% if forloop.last %}<div class="gallery-clearfix"></div>{% elif forloop.counter|divisibleby:2 or forloop.counter|divisibleby:3 %}<div class="{% if forloop.counter|divisibleby:2 %}gallery-clearfix2 {% endif %}{% if forloop.counter|divisibleby:3 %}gallery-clearfix3{% endif %}"></div>{% endif %}{% endfor %}
 </div>

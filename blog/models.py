@@ -208,7 +208,7 @@ class Figure(models.Model):
     if (not isinstance(self.img.file, UploadedFile)) and (self.thumbnail):
       return
       
-    THUMBNAIL_SIZE = (150, 150)
+    THUMBNAIL_SIZE = (600,400)
     
     if isinstance(self.img.file, UploadedFile):
       if self.img.file.content_type == 'image/jpeg':

@@ -1,11 +1,11 @@
-<div class="{% if border %}figure{% else %}figure-noborder{% endif %}">
-  {% if title %}<h4>{{figure.title}}</h4>{% endif %}
-  {% if thumbnail %}
+
+<div style="width: 100%">
+  <div class="nd-dark-grey" style="margin: auto; max-width:{% if thumbnail %}{{figure.thumbnail.width}}px">
   <a href="{{figure.img.url}}">
     <img src="{{figure.thumbnail.url}}" title="{{figure.title}}" alt="{{figure.caption}}"/>
-  </a>
-  {% else %}
+  </a>{% else %}{{figure.img.width}}px">
   <img src="{{figure.img.url}}" title="{{figure.title}}" alt="{{figure.caption}}"/>
-  {% endif %}
-  {% if caption %}<p>{{figure.caption}}</p>{% endif %}
+  {% endif %}<div class="w3-container"><p>{% if title %}<strong>{{figure.title}}:</strong> {% endif %}
+  {% if caption %}{{figure.caption}}{% endif %}</p></div></div>
 </div>
+
