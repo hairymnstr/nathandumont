@@ -13,7 +13,12 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
-import os
+import os, sys
+
+project = os.path.dirname(__file__)
+workspace = os.path.dirname(project)
+if workspace not in sys.path:
+	sys.path.append(workspace)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nathandumont.settings")
 
