@@ -1,7 +1,7 @@
 from blog.models import Post, Figure, LegacyNode, Attachment, Comment, Section, Gallery, Tag
 from blog.models import PostTag, ForeignNode, PostGroupItem, PostGroup, ExternalGroupItem
 from django.contrib import admin
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.template import RequestContext, loader
 import re, httplib, urlparse
 from django.http import HttpResponse
@@ -115,11 +115,11 @@ class PostAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(PostAdmin, self).get_urls()
 
-        my_urls = patterns('',
+        my_urls = [
             url(r'^link_status/$', self.admin_site.admin_view(self.link_status)),
             url(r'^validation/(?P<post_id>\d+)/$', self.admin_site.admin_view(self.validation)),
             url(r'^(?P<post_id>\d+)/preview/$', self.admin_site.admin_view(self.preview)),
-        )
+        ]
         return my_urls + urls
     
     def link_status(self, request, *args, **kwargs):

@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect
-from django.template import RequestContext, loader, Context
+from django.template import loader
 from django.shortcuts import get_object_or_404
 from blog.models import Post, LegacyNode, ForeignNode, Attachment, Comment, Section, PostTag, Tag, Gallery
 from math import ceil
@@ -22,12 +22,14 @@ def pagination(num_posts, limit, url_base):
         next_page = False
 
     t = loader.get_template('blog/paginator.html')
-    c = Context({'num_pages': pages,
-                 'pages': range(1, pages+1),
-                 'page': limit + 1,
-                 'next': next_page,
-                 'prev': prev_page,
-                 'page0': url_base})
+    c = {
+        'num_pages': pages,
+        'pages': range(1, pages+1),
+        'page': limit + 1,
+        'next': next_page,
+        'prev': prev_page,
+        'page0': url_base
+    }
     return t.render(c)
 
 def home(request, offset="1"):
@@ -40,12 +42,14 @@ def home(request, offset="1"):
   paginator = pagination(num_posts, limit, '/')
   
   t = loader.get_template('blog/index.html')
-  c = RequestContext(request, {'base_template': template_name(),
-                               'posts': posts, 'area': 'Home', 
-                               'title': current_site.domain + ' : Home', 
-                               'paginator': paginator})
+  c = {
+    'base_template': template_name(),
+    'posts': posts, 'area': 'Home', 
+    'title': current_site.domain + ' : Home', 
+    'paginator': paginator
+  }
  
-  return HttpResponse(t.render(c))
+  return HttpResponse(t.render(c, request))
   
 def section(request, section, offset="1"):
   current_site = Site.objects.get_current()
@@ -57,12 +61,14 @@ def section(request, section, offset="1"):
   paginator = pagination(num_posts, limit, '/section/' + section + '/') 
   
   t = loader.get_template('blog/index.html')
-  c = RequestContext(request, {'base_template': template_name(),
-                               'posts': posts, 'area': sec.title, 
-                               'title': current_site.domain + ' : ' + sec.title,
-                               'paginator': paginator}) 
+  c = {
+    'base_template': template_name(),
+    'posts': posts, 'area': sec.title, 
+    'title': current_site.domain + ' : ' + sec.title,
+    'paginator': paginator
+  }
   
-  return HttpResponse(t.render(c))
+  return HttpResponse(t.render(c, request))
 
 def tagged_posts(request, tag_name, offset="1"):
   current_site = Site.objects.get_current()
@@ -75,13 +81,15 @@ def tagged_posts(request, tag_name, offset="1"):
   paginator = pagination(num_posts, limit, '/tag/' + tag_name + '/')
   
   t = loader.get_template('blog/index.html')
-  c = RequestContext(request, {'base_template': template_name(),
-                               'posts': posts,
-                               'area': tag.text, 
-                               'title': current_site.domain + ' : ' + tag.text,
-                               'paginator': paginator})
+  c = {
+    'base_template': template_name(),
+    'posts': posts,
+    'area': tag.text, 
+    'title': current_site.domain + ' : ' + tag.text,
+    'paginator': paginator
+  }
   
-  return HttpResponse(t.render(c))
+  return HttpResponse(t.render(c, request))
 
 def tree_comments(comment, depth):
     comm_list = []
@@ -111,13 +119,15 @@ def blog_page(request, slug):
     dl.append((recursed_comments[-1][0], range(recursed_comments[-1][1]+1)))
   
   t = loader.get_template('blog/page.html')
-  c = RequestContext(request, {'base_template': template_name(),
-                               'site': current_site,
-                               'post': post, 
-                               'atts': att, 
-                               'comments': dl})
+  c = {
+    'base_template': template_name(),
+    'site': current_site,
+    'post': post, 
+    'atts': att, 
+    'comments': dl
+  }
   
-  return HttpResponse(t.render(c))
+  return HttpResponse(t.render(c, request))
 
 def special_page(request, slug):
     current_site = Site.objects.get_current()
@@ -130,13 +140,15 @@ def special_page(request, slug):
     tags = PostTag.objects.filter(post=doc)
     
     t = loader.get_template('blog/page.html')
-    c = RequestContext(request, {'base_template': template_name(),
-                                 'site': current_site,
-                                 'post': doc, 
-                                 'atts': att, 
-                                 'comments': None})
+    c = {
+        'base_template': template_name(),
+        'site': current_site,
+        'post': doc, 
+        'atts': att, 
+        'comments': None
+    }
     
-    return HttpResponse(t.render(c))
+    return HttpResponse(t.render(c, request))
 
 def legacy_node(request, nid):
   try:
@@ -151,19 +163,23 @@ def gallery_index(request):
     galleries = Gallery.objects.filter(hidden=False).order_by('-gallery_date')
     
     t = loader.get_template('blog/gallery_index.html')
-    c = RequestContext(request, {'base_template': template_name(),
-                                 'site': current_site,
-                                 'galleries': galleries})
+    c = {
+        'base_template': template_name(),
+        'site': current_site,
+        'galleries': galleries
+    }
     
-    return HttpResponse(t.render(c))
+    return HttpResponse(t.render(c, request))
 
 def gallery(request, slug):
     current_site = Site.objects.get_current()
     gallery = get_object_or_404(Gallery, label=slug)
     
     t = loader.get_template('blog/gallery_live.html')
-    c = RequestContext(request, {'base_template': template_name(),
-                                 'site': current_site,
-                                 'gallery': gallery})
+    c = {
+        'base_template': template_name(),
+        'site': current_site,
+        'gallery': gallery
+    }
     
-    return HttpResponse(t.render(c))
+    return HttpResponse(t.render(c, request))
