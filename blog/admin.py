@@ -3,14 +3,13 @@ from blog.models import PostTag, ForeignNode, PostGroupItem, PostGroup, External
 from django.contrib import admin
 from django.conf.urls import url
 from django.template import RequestContext, loader
-import re, httplib, urlparse
+import re
 from django.http import HttpResponse
 from functools import update_wrapper
 from django.shortcuts import get_object_or_404
-from tidylib import tidy_document
 from django.shortcuts import render_to_response
 
-def check_url(url):
+"""def check_url(url):
     if(url[0] == '/'):
         conn = httplib.HTTPConnection("nathandumont.home")
         conn.request("HEAD", url)
@@ -60,7 +59,7 @@ def check_url(url):
         extra = ""
         code = -1
 
-    return url, code, extra, style
+    return url, code, extra, style"""
     
 class LegacyNodeInline(admin.StackedInline):
     model = LegacyNode
@@ -116,13 +115,13 @@ class PostAdmin(admin.ModelAdmin):
         urls = super(PostAdmin, self).get_urls()
 
         my_urls = [
-            url(r'^link_status/$', self.admin_site.admin_view(self.link_status)),
-            url(r'^validation/(?P<post_id>\d+)/$', self.admin_site.admin_view(self.validation)),
+            #url(r'^link_status/$', self.admin_site.admin_view(self.link_status)),
+            #url(r'^validation/(?P<post_id>\d+)/$', self.admin_site.admin_view(self.validation)),
             url(r'^(?P<post_id>\d+)/preview/$', self.admin_site.admin_view(self.preview)),
         ]
         return my_urls + urls
     
-    def link_status(self, request, *args, **kwargs):
+    """def link_status(self, request, *args, **kwargs):
         re_img = re.compile(r'<img[^<>]*?src=["' r"']([^'" r'"' r"]+)['" r'"][^<>]*/>')
         re_a = re.compile(r'<a[^<>]*?href=["' r"']([^'" r'"]+)["' r"'][^<>]*>")
         pages = []
@@ -132,7 +131,6 @@ class PostAdmin(admin.ModelAdmin):
             page['links'] = []
             
             for a in re_a.finditer(post.source):
-                print a.groups()
                 url, code, extra, style = check_url(a.groups()[0])
                 page['links'].append({'url': url, 'code': code, 'extra': extra, 'style': style})
                 
@@ -159,7 +157,7 @@ class PostAdmin(admin.ModelAdmin):
                                      'original': post.title,
                                      'post': post})
         
-        return HttpResponse(t.render(c))
+        return HttpResponse(t.render(c))"""
         
     def preview(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)

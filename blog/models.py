@@ -5,7 +5,7 @@ import datetime, markdown, re
 from django.template import loader, Context
 
 from PIL import Image
-from cStringIO import StringIO
+from io import BytesIO
 from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
 import os, cgi
 # Create your models here.
@@ -229,11 +229,11 @@ class Figure(models.Model):
         file_extension = 'png'
         content_type = 'image/png'
         
-    image = Image.open(StringIO(self.img.read()))
+    image = Image.open(BytesIO(self.img.read()))
         
     image.thumbnail(THUMBNAIL_SIZE, Image.ANTIALIAS)
     
-    temp = StringIO()
+    temp = BytesIO()
     image.save(temp, pil_type)
     temp.seek(0)
     
@@ -262,11 +262,11 @@ class Figure(models.Model):
     else:
       # thumbnail will have already read the file from memory
       self.img.file.seek(0)
-      image = Image.open(StringIO(self.img.file.read()))
+      image = Image.open(BytesIO(self.img.file.read()))
     
     image.thumbnail((1600, 1600), Image.ANTIALIAS)
     
-    temp = StringIO()
+    temp = BytesIO()
     image.save(temp, pil_type)
     temp.seek(0)
     
