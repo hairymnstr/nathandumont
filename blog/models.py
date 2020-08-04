@@ -157,7 +157,7 @@ class Post(models.Model):
   reviewed = models.BooleanField(default=False)
   section = models.ForeignKey('Section')
   
-  def __unicode__(self):
+  def __str__(self):
     return self.title
   
   def get_tags(self):
@@ -193,7 +193,7 @@ class Figure(models.Model):
   created = models.DateTimeField(auto_now_add=True)
   modified = models.DateTimeField(auto_now=True)
 
-  def __unicode__(self):
+  def __str__(self):
     return self.label
     
   def preview_tag(self):
@@ -288,7 +288,7 @@ class Gallery(models.Model):
   description = models.TextField(blank=True, default="")
   gallery_date = models.DateTimeField(default=datetime.datetime.now, blank=True)
   
-  def __unicode__(self):
+  def __str__(self):
     return self.title + " (" + self.label + ")"
     
   def save(self, *args, **kwargs):
@@ -307,7 +307,7 @@ class Attachment(models.Model):
   post = models.ForeignKey('Post')
   size = models.IntegerField(blank=True)
   
-  def __unicode__(self):
+  def __str__(self):
     return unicode(self.file)
     
   def save(self, *args, **kwargs):
@@ -325,7 +325,7 @@ class Comment(models.Model):
   parent = models.ForeignKey('Comment', blank=True, null=True)
   approved = models.BooleanField(default=False)
   
-  def __unicode__(self):
+  def __str__(self):
       return self.posted_by +": \"" + self.title + "\""
       
   def get_children(self):
@@ -359,7 +359,7 @@ class Section(models.Model):
   title = models.CharField(max_length=100)
   url = models.SlugField(blank=True, unique=True)
   
-  def __unicode__(self):
+  def __str__(self):
     return self.title
     
   def save(self, *args, **kwargs):
@@ -372,13 +372,13 @@ class LegacyNode(models.Model):
   node = models.IntegerField()
   post = models.ForeignKey('Post')
   
-  def __unicode__(self):
+  def __str__(self):
       return self.post.title + " [" + unicode(self.node) + "]"
   
 class ForeignNode(models.Model):
   node = models.IntegerField()
   
-  def __unicode__(self):
+  def __str__(self):
       return "hairymnstr.com/node/" + unicode(self.node)
   
 class Tag(models.Model):
@@ -386,7 +386,7 @@ class Tag(models.Model):
   slug = models.SlugField(blank=True, unique=True)
   legacyId = models.IntegerField(blank=True, null=True)
   
-  def __unicode__(self):
+  def __str__(self):
     return self.text
     
   def save(self, *args, **kwargs):
@@ -399,14 +399,14 @@ class PostTag(models.Model):
   tag = models.ForeignKey('Tag')
   post = models.ForeignKey('Post')
   
-  def __unicode__(self):
+  def __str__(self):
     return self.post.title + " [" + self.tag.text + "]"
 
 class PostGroup(models.Model):
     group_name = models.CharField(max_length=100)
     slug = models.SlugField(blank=True, unique=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.group_name
           
     def save(self, *args, **kwargs):
@@ -421,7 +421,7 @@ class PostGroupItem(models.Model):
     weight = models.IntegerField(default=0)
     is_summary = models.BooleanField(default=False)
     
-    def __unicode__(self):
+    def __str__(self):
         return "[" + self.group.group_name + "] " + self.post.title
         
 class ExternalGroupItem(models.Model):
@@ -430,7 +430,7 @@ class ExternalGroupItem(models.Model):
     description = models.CharField(max_length=100, blank=True)
     weight = models.IntegerField(default=0)
     
-    def __unicode__(self):
+    def __str__(self):
         if self.description == "":
             return "[" + self.group.group_name + "] " + self.url
         else:
