@@ -6,8 +6,7 @@ from django.template import RequestContext, loader
 import re
 from django.http import HttpResponse
 from functools import update_wrapper
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render_to_response
+from django.shortcuts import get_object_or_404, render
 
 """def check_url(url):
     if(url[0] == '/'):
@@ -112,7 +111,7 @@ class PostAdmin(admin.ModelAdmin):
     model = Post
     
     def get_urls(self):
-        urls = super(PostAdmin, self).get_urls()
+        urls = super().get_urls()
 
         my_urls = [
             #url(r'^link_status/$', self.admin_site.admin_view(self.link_status)),
@@ -162,11 +161,11 @@ class PostAdmin(admin.ModelAdmin):
     def preview(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
         
-        return render_to_response("admin/blog/post/preview.html", {
+        return render(request, "admin/blog/post/preview.html", {
             'post': post,
             'opts': self.model._meta,
             'title': 'Preview for "%s"' % post.title,
-            }, context_instance=RequestContext(request))
+            })
             
 class GalleryAdmin(admin.ModelAdmin):
     fieldsets = (

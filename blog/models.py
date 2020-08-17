@@ -308,7 +308,7 @@ class Attachment(models.Model):
   size = models.IntegerField(blank=True)
   
   def __str__(self):
-    return unicode(self.file)
+    return str(self.file)
     
   def save(self, *args, **kwargs):
     if isinstance(self.file.file, UploadedFile):
@@ -373,13 +373,13 @@ class LegacyNode(models.Model):
   post = models.ForeignKey('Post')
   
   def __str__(self):
-      return self.post.title + " [" + unicode(self.node) + "]"
+      return self.post.title + " [" + str(self.node) + "]"
   
 class ForeignNode(models.Model):
   node = models.IntegerField()
   
   def __str__(self):
-      return "hairymnstr.com/node/" + unicode(self.node)
+      return "hairymnstr.com/node/" + str(self.node)
   
 class Tag(models.Model):
   text = models.CharField(max_length=100)

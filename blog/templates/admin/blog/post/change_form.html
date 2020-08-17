@@ -3,8 +3,8 @@
 {% block object-tools %}
 {% if change %}{% if not is_popup %}
 <ul class="object-tools">
-        <li><a class="historylink" href="history/">{% trans "History" %}</a></li>
-        <li><a class="historylink" href="preview/">{% trans "Preview" %}</a></li>
+        <li><a class="historylink" href="/admin/blog/post/{{original.id}}/history/">{% trans "History" %}</a></li>
+        <li><a class="historylink" href="/admin/blog/post/{{original.id}}/preview/">{% trans "Preview" %}</a></li>
 {% if has_absolute_url %}
         <li><a class="viewsitelink" href="../../../r/{{ content_type_id }}/{{ object_id }}/">{% trans "View on site" %}</a></li>
 {% endif%}</ul>
