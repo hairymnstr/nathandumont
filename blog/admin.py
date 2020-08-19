@@ -3,8 +3,9 @@ from blog.models import PostTag, ForeignNode, PostGroupItem, PostGroup, External
 from django.contrib import admin
 from django.conf.urls import url
 from django.template import RequestContext, loader
-import re
 from django.http import HttpResponse
+import re
+from tidylib.tidy import Tidy
 from functools import update_wrapper
 from django.shortcuts import get_object_or_404, render
 
@@ -115,7 +116,7 @@ class PostAdmin(admin.ModelAdmin):
 
         my_urls = [
             #url(r'^link_status/$', self.admin_site.admin_view(self.link_status)),
-            #url(r'^validation/(?P<post_id>\d+)/$', self.admin_site.admin_view(self.validation)),
+            url(r'^(?P<post_id>\d+)/validate/$', self.admin_site.admin_view(self.validation)),
             url(r'^(?P<post_id>\d+)/preview/$', self.admin_site.admin_view(self.preview)),
         ]
         return my_urls + urls
@@ -143,20 +144,20 @@ class PostAdmin(admin.ModelAdmin):
         t = loader.get_template('blog/link_status.html')
         c = RequestContext(request, {'pages': pages, 'app_label': 'blog', 'opts': self.model._meta})
   
-        return HttpResponse(t.render(c))
+        return HttpResponse(t.render(c))"""
         
     def validation(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
-        document, errors = tidy_document("<!DOCTYPE html><html><head><title>test</title></head><body>" + 
+        t = Tidy()
+        document, errors = t.tidy_document("<!DOCTYPE html><html><head><title>test</title></head><body>" + 
                                   post.rendered + "</body></html>")
         
-        t = loader.get_template('blog/verify.html')
-        c = RequestContext(request, {'errors': errors, 'opts': self.model._meta, 
-                                     'title': post.title, 'app_label': 'blog',
-                                     'original': post.title,
-                                     'post': post})
-        
-        return HttpResponse(t.render(c))"""
+        return render(request, 'admin/blog/post/verify.html', {
+            'errors': errors, 'opts': self.model._meta, 
+            'title': post.title, 'app_label': 'blog',
+            'original': post.title,
+            'post': post
+            })
         
     def preview(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)

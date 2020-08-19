@@ -3,7 +3,9 @@
 {% block extrastyle %}{{ block.super }}
     <link rel='stylesheet' href='{{STATIC_URL}}style.css'/>
 {% endblock %}
+
 {% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
+
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
      <a href="../../../../">{% trans "Home" %}</a> &rsaquo;
@@ -12,11 +14,13 @@
      <a href="../">{{ post.title }}</a> &rsaquo;
      {% trans 'Preview Post' %}</div>
 {% endif %}{% endblock %}
+
 {% block content %}
-<h3>Summary:</h3>
+<fieldset class="module">
+<h2>Summary</h2>
 <article>
     <div class='post-summary'>
-        <h2><a href='/blog/{{ post.slug }}'>{{post.title}}</a></h2>
+        <h2 style="background: none"><a href='/blog/{{ post.slug }}'>{{post.title}}</a></h2>
         <p class='pubdate'>Last updated: {{post.last_modified|date:"d M Y - H:i"}}</p>
         {{ post.summary|safe }}
         <dl class='tags'>
@@ -33,11 +37,12 @@
         </dl>
     </div>
 </article>
-<hr class='clear'/>
-<h3>Body:</h3>
+</fieldset>
+<fieldset class="module">
+<h2>Body</h2>
 <article>
     <header>
-      <h1>{{post.title}}</h1>
+      <h1 style="padding-left: 10px">{{post.title}}</h1>
       <p class='pubdate'>Last updated: {{ post.last_modified }}</p>
     </header>
     {{ post.rendered|safe }}
@@ -62,4 +67,5 @@
         {% endfor %}
     </dl>
 </article>
+</fieldset>
 {% endblock %}
