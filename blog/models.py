@@ -83,11 +83,11 @@ class FilterProcessor:
         if name:
             """ This is a request to insert a named figure """
             fig = Figure.objects.get(label=name)
-            self.output += self.figure_template.render(Context({"figure": fig,
-                                                                "thumbnail": thumbnail,
-                                                                "title": title,
-                                                                "caption": caption,
-                                                                "border": border}))
+            self.output += self.figure_template.render({"figure": fig,
+                                                        "thumbnail": thumbnail,
+                                                        "title": title,
+                                                        "caption": caption,
+                                                        "border": border})
         else:
             """ This is a request to link to a named figure within this page """
             pass
@@ -96,7 +96,7 @@ class FilterProcessor:
         gallery = Gallery.objects.get(label=name)
         figures = Figure.objects.filter(gallery=gallery)
         
-        self.output += self.gallery_template.render(Context({"figures": figures}))
+        self.output += self.gallery_template.render({"figures": figures})
         
     def tag_summary(self, start=False, end=False):
         if start:
@@ -125,25 +125,25 @@ class FilterProcessor:
         self.refs_start = len(self.output)
         
     def get_rendered(self):
-        return markdown.markdown(self.output, output_format="html5")
+        return markdown.markdown(self.output, output_format="html5", extensions=["tables"])
         
     def get_summary(self):
         if self.refs_start > 0:
             summary = self.output[self.summary_start:self.summary_end] + self.output[self.refs_start:]
         else:
             summary = self.output[self.summary_start:self.summary_end]
-        return markdown.markdown(summary, output_format="html5")
+        return markdown.markdown(summary, output_format="html5", extensions=["tables"])
         
     def post_group(self, name, two_column=False):
         postgroup = PostGroup.objects.get(slug=name)
         posts = PostGroupItem.objects.filter(group=postgroup)
         externals = ExternalGroupItem.objects.filter(group=postgroup)
         
-        self.output += self.group_template.render(Context({"slug": self.slug,
-                                                           "group": postgroup,
-                                                           "posts": posts,
-                                                           "externals": externals,
-                                                           "two_column": two_column}))
+        self.output += self.group_template.render({"slug": self.slug,
+                                                   "group": postgroup,
+                                                   "posts": posts,
+                                                   "externals": externals,
+                                                   "two_column": two_column})
         
 class Post(models.Model):
   title = models.CharField(max_length=1000)
