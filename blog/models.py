@@ -155,7 +155,7 @@ class Post(models.Model):
   published = models.BooleanField(default=False)
   special = models.BooleanField(default=False)
   reviewed = models.BooleanField(default=False)
-  section = models.ForeignKey('Section')
+  section = models.ForeignKey('Section', on_delete=models.PROTECT)
   
   def __str__(self):
     return self.title
@@ -189,7 +189,7 @@ class Figure(models.Model):
   title = models.CharField(max_length=50)
   caption = models.TextField(blank=True, null=True)
   label = models.SlugField(unique=True)
-  gallery = models.ForeignKey('Gallery', blank=True, null=True)
+  gallery = models.ForeignKey('Gallery', on_delete=models.SET_NULL, blank=True, null=True)
   created = models.DateTimeField(auto_now_add=True)
   modified = models.DateTimeField(auto_now=True)
 
@@ -304,7 +304,7 @@ class Attachment(models.Model):
   file = models.FileField(upload_to="uploads")
   updated = models.DateTimeField(auto_now=True)
   description = models.CharField(max_length=256)
-  post = models.ForeignKey('Post')
+  post = models.ForeignKey('Post', on_delete=models.CASCADE)
   size = models.IntegerField(blank=True)
   
   def __str__(self):
@@ -321,8 +321,8 @@ class Comment(models.Model):
   content = models.TextField()
   posted = models.DateTimeField(blank=True)
   posted_by = models.CharField(max_length=100)
-  post = models.ForeignKey('Post')
-  parent = models.ForeignKey('Comment', blank=True, null=True)
+  post = models.ForeignKey('Post', on_delete=models.CASCADE)
+  parent = models.ForeignKey('Comment', on_delete=models.CASCADE, blank=True, null=True)
   approved = models.BooleanField(default=False)
   
   def __str__(self):
@@ -370,7 +370,7 @@ class Section(models.Model):
     
 class LegacyNode(models.Model):
   node = models.IntegerField()
-  post = models.ForeignKey('Post')
+  post = models.ForeignKey('Post', on_delete=models.CASCADE)
   
   def __str__(self):
       return self.post.title + " [" + str(self.node) + "]"
@@ -396,8 +396,8 @@ class Tag(models.Model):
     super(Tag, self).save(*args, **kwargs)
 
 class PostTag(models.Model):
-  tag = models.ForeignKey('Tag')
-  post = models.ForeignKey('Post')
+  tag = models.ForeignKey('Tag', on_delete=models.CASCADE)
+  post = models.ForeignKey('Post', on_delete=models.CASCADE)
   
   def __str__(self):
     return self.post.title + " [" + self.tag.text + "]"
@@ -416,8 +416,8 @@ class PostGroup(models.Model):
         super(PostGroup, self).save(*args, **kwargs)
         
 class PostGroupItem(models.Model):
-    group = models.ForeignKey('PostGroup')
-    post = models.ForeignKey('Post')
+    group = models.ForeignKey('PostGroup', on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE)
     weight = models.IntegerField(default=0)
     is_summary = models.BooleanField(default=False)
     
@@ -425,7 +425,7 @@ class PostGroupItem(models.Model):
         return "[" + self.group.group_name + "] " + self.post.title
         
 class ExternalGroupItem(models.Model):
-    group = models.ForeignKey('PostGroup')
+    group = models.ForeignKey('PostGroup', on_delete=models.CASCADE)
     url = models.URLField()
     description = models.CharField(max_length=100, blank=True)
     weight = models.IntegerField(default=0)
