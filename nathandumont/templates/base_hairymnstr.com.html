@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel='shortcut icon' href='{{STATIC_URL}}hairymnstr_favicon.ico'/>
-    <title>{% block title %}{% endblock %}</title>
+	<link rel='shortcut icon' href='{% static 'hairymnstr_favicon.ico' %}'/>
+        <title>{% block title %}{% endblock %}</title>
 	<meta name='viewport' content='width=device-width, internal-scale=1'/>
-	<link rel='stylesheet' href='{{STATIC_URL}}w3.css'/>
-	<link rel='stylesheet' href='{{STATIC_URL}}style.css'/>
+	<link rel='stylesheet' href='{% static 'w3.css' %}'/>
+	<link rel='stylesheet' href='{% static 'style.css' %}/>
   </head>
   <body>
     <span id='page_header'>{% block area %}{% endblock %}</span>
