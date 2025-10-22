@@ -7,7 +7,8 @@ from django.template import loader, Context
 from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
-import os, cgi
+import os
+import html
 # Create your models here.
 
 def attributes_to_dict(attributes):
@@ -231,7 +232,7 @@ class Figure(models.Model):
         
     image = Image.open(BytesIO(self.img.read()))
         
-    image.thumbnail(THUMBNAIL_SIZE, Image.ANTIALIAS)
+    image.thumbnail(THUMBNAIL_SIZE, Image.LANCZOS)
     
     temp = BytesIO()
     image.save(temp, pil_type)
@@ -264,7 +265,7 @@ class Figure(models.Model):
       self.img.file.seek(0)
       image = Image.open(BytesIO(self.img.file.read()))
     
-    image.thumbnail((1600, 1600), Image.ANTIALIAS)
+    image.thumbnail((1600, 1600), Image.LANCZOS)
     
     temp = BytesIO()
     image.save(temp, pil_type)
@@ -338,15 +339,15 @@ class Comment(models.Model):
       m = are.search(self.content, pos)
       output = ""
       while m:
-          output += cgi.escape(self.content[pos:m.start()])
+          output += html.escape(self.content[pos:m.start()])
           output += "<a href=\""
           output += m.group(1).replace("&amp;", "&").replace("&", "&amp;")
           output += "\">"
-          output += cgi.escape(m.group(2))
+          output += html.escape(m.group(2))
           output += "</a>"
           pos = m.end()
           m = are.search(self.content, pos)
-      output += cgi.escape(self.content[pos:])
+      output += html.escape(self.content[pos:])
       
       return "<p>" + "<br/>".join(output.splitlines()) + "</p>"
       
